@@ -2,8 +2,8 @@ class Heal
  
   class File <  Resource
   
-    def initialize path, options={}
-      super options
+    def initialize path, cloud, options={}
+      super cloud, options
       @path = path
     end
   
@@ -12,7 +12,7 @@ class Heal
     end
   
     def heal
-      @cloud.log "file #{@path}"
+      @cloud.log "file: #{@path}"
       if @options[:source]
         run "cp #{@options[:source]} #{@path}"
       else
@@ -30,6 +30,3 @@ class Heal
 
 end
 
-def file path, options={}
-  r = Heal::File.new path, options
-end

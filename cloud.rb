@@ -1,40 +1,44 @@
 class Heal
-  class Cloud
+  class Cloud < Resource
     
-    def initialize name
+    attr_reader :depth
+    
+    def initialize name, parent, &block
+      @parent = parent
       @name = name
       @resources = []
-      healer.current_cloud.add_resource self if healer.current_cloud
-      @depth = healer.current_depth
+      @depth = parent ? @parent.depth+1 : 0
+      instance_eval &block
     end
 
-    def add_resource r
-      @resources << r
-    end
-  
-    def resources
-      @resources
-    end
-  
-    def set_instances i
-      @instances = i
-    end
-  
     def heal
-      log "cloud #{@name}", -1
-      log "#{@instances} instances" if @instances
+      log "cloud: #{@name}", -1
+      log "instances: #{@instances}" if @instances
  #     raise "A cloud with resources must have some instances!" if @instances.empty? && @resources.any?
       @resources.each { |item| item.heal }
     end
 
     def log msg, level=0
-      puts '  '*(@depth+1+level) + msg
+      puts '   '*(@depth+1+level) + msg
     end
 
+    
+    def cloud name, &block
+      @resources << Heal::Cloud.new(name, self, &block)
+    end
+    
+    def instances number
+      @instances = number
+    end
+
+    def file path, options={}
+      @resources << Heal::File.new(path, self, options)
+    end
+    
+    def recipe path
+      instance_eval ::File.read("recipes/#{path}.rb")
+    end
   end
 end
 
 
-def instances number
-  healer.current_cloud.set_instances number
-end

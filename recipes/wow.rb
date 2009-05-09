@@ -1,0 +1,1 @@
+file 'wow', :content => "wow this is wonderful!"

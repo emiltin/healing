@@ -2,10 +2,9 @@ class Heal
   
    class Resource
   
-    def initialize options={}      
+    def initialize cloud, options={}     
+      @cloud = cloud 
       @options = defaults.merge(options)
-      @cloud = healer.current_cloud
-      @cloud.add_resource self
     end
   
     def run cmd
