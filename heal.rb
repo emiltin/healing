@@ -2,7 +2,7 @@ require 'resources/resource.rb'
 require 'resources/file.rb'
 require 'resources/dir.rb'
 require 'resources/package.rb'
-require 'cloud.rb'
+require 'resources/cloud.rb'
 
 
 
