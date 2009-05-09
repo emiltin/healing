@@ -1,13 +1,24 @@
 require 'heal'
 
 
-cloud :app do  
-  dir 'tmp'
-  file 'tmp/1', :content => 'so much space!'
+cloud :healing do  
+
+  cloud :app do
+    instances 2..3
+    file 'app'
+  end
   
   cloud :db do
-    dir 'db'
+    cloud :master do
+      instances 1
+      file 'master'
+    end
+    cloud :slave do
+      instances 1
+      file 'slave'
+    end
   end
+
 end
 
 

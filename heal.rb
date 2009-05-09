@@ -3,6 +3,7 @@ require 'resources/resource.rb'
 require 'resources/file.rb'
 require 'resources/dir.rb'
 require 'resources/package.rb'
+require 'instance.rb'
 
 
 
@@ -29,9 +30,13 @@ class Heal
     @clouds.last
   end
 
+  def current_depth
+    @clouds.size
+  end
+  
 end
 
-$heal = Heal.new
+$healer = Heal.new
 
 def cloud name, &block
   healer.push_cloud Heal::Cloud.new(name)
@@ -44,5 +49,5 @@ def heal
 end
 
 def healer
-  $heal
+  $healer
 end

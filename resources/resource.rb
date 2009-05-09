@@ -4,7 +4,8 @@ class Heal
   
     def initialize options={}      
       @options = defaults.merge(options)
-      healer.current_cloud.add self
+      @cloud = healer.current_cloud
+      @cloud.add_resource self
     end
   
     def run cmd
@@ -12,10 +13,6 @@ class Heal
       puts result unless result==''
     end
   
-    def log msg
-      puts msg
-    end
-
     def defaults
       {}
     end

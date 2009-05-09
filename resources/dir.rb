@@ -12,7 +12,7 @@ class Heal
     end
   
     def heal
-      log "dir #{@path}"
+      @cloud.log "dir #{@path}"
       if @options[:source]
         run "cp -R #{@options[:source]} #{@path}"
       else
@@ -22,7 +22,7 @@ class Heal
     end
     
     def revert
-      log "reverting dir '#{@path}'"
+      @cloud.log "reverting dir '#{@path}'"
 #      run "rm -rf #{@path}"
     end
     
