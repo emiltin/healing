@@ -1,0 +1,6 @@
+#!/usr/bin/env ruby
+
+require 'healing'
+require 'clouds.rb'
+
+Healing::Cloud.clouds.first.describe

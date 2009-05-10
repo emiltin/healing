@@ -3,14 +3,8 @@ require 'resources/file.rb'
 require 'resources/dir.rb'
 require 'resources/package.rb'
 require 'resources/cloud.rb'
+require 'ec2_provider.rb'
+require 'worker.rb'
 
 
 
-
-def cloud name, &block
-  $cloud = Heal::Cloud.new :healing, nil, &block
-end
-
-def heal
-  $cloud.heal
-end

@@ -1,4 +1,4 @@
-class Heal
+class Healing
   
   class Package <  Resource
   
@@ -21,5 +21,5 @@ class Heal
 end
 
 def package package, options={}
-  r = Heal::Package.new package, options
+  r = Healing::Package.new package, options
 end

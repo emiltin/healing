@@ -1,4 +1,4 @@
-class Heal
+class Healing
   
    class Resource
   
@@ -20,6 +20,10 @@ class Heal
     end
     
     def revert
+    end
+    
+    def log msg
+      @cloud.log msg
     end
     
   end

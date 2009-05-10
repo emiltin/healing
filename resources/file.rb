@@ -1,4 +1,4 @@
-class Heal
+class Healing
  
   class File <  Resource
   
@@ -12,7 +12,7 @@ class Heal
     end
   
     def heal
-      @cloud.log "file: #{@path}"
+      describe
       if @options[:source]
         run "cp #{@options[:source]} #{@path}"
       else
@@ -24,6 +24,10 @@ class Heal
     def revert
       @cloud.log "reverting file '#{@path}'"
       run "rm #{@path}"
+    end
+ 
+    def describe options={}
+      log "file: #{@path}"
     end
     
   end

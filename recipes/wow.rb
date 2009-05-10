@@ -1,1 +1,1 @@
-file 'wow', :content => "wow this is wonderful!"
+file '/tmp/healing', :content => "wow this is wonderful!"

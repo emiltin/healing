@@ -1,0 +1,6 @@
+#!/usr/bin/env ruby
+
+require 'healing'
+
+ec2 = Healing::EC2Provider.new
+ec2.describe
