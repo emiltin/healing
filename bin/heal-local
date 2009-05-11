@@ -1,0 +1,6 @@
+#!/usr/bin/env ruby
+
+require 'healing'
+
+healer = LocalHealing.new
+healer.heal

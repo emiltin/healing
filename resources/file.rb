@@ -14,21 +14,30 @@ class Healing
     def heal
       describe
       if @options[:source]
-        run "cp #{@options[:source]} #{@path}"
+        Healing.run_locally "cp #{@options[:source]} #{@path}"
       else
-        run "echo '#{@options[:content]}' > #{@path}"
+        Healing.run_locally "echo '#{@options[:content]}' > #{@path}"
       end  
-      run "chmod '#{@options[:mode]}' #{@path}" if @options[:mode]
+      Healing.run_locally "chmod '#{@options[:mode]}' #{@path}" if @options[:mode]
     end
     
     def revert
       @cloud.log "reverting file '#{@path}'"
-      run "rm #{@path}"
+      Healing.run_locally "rm #{@path}"
     end
  
     def describe options={}
-      info = @options[:content] ? " (#{@options[:content][0..10]}...)" : nil
-      log "file: #{@path}#{info}"
+      c = content_summary
+      c = " = '#{c}'" if c
+      log "file: #{@path}#{c}"
+    end
+    
+    def content_summary
+      if @options[:content]
+        s = @options[:content].strip.split("\n")[0]
+        max = 50
+        return s.size > max ? "#{s[0..max]}..." : s
+      end
     end
     
   end

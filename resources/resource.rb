@@ -7,11 +7,6 @@ class Healing
       @options = defaults.merge(options)
     end
   
-    def run cmd
-      result  = `#{cmd}`
-      puts result unless result==''
-    end
-  
     def defaults
       {}
     end

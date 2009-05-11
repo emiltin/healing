@@ -14,11 +14,11 @@ class Healing
     def heal
       describe
       if @options[:source]
-        run "cp -R #{@options[:source]} #{@path}"
+        Healing.run_locally "cp -R #{@options[:source]} #{@path}"
       else
-        run "mkdir -p #{@path}"
+        Healing.run_locally "mkdir -p #{@path}"
       end  
-      run "chmod '#{@options[:mode]}' #{@path}" if @options[:mode]
+      Healing.run_locally "chmod '#{@options[:mode]}' #{@path}" if @options[:mode]
     end
     
     def revert

@@ -1,7 +1,0 @@
-#!/usr/bin/env ruby
-
-require 'healing'
-
-w = Healing::Worker.new
-w.load_cloud_uuid
-w.heal
