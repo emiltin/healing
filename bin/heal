@@ -2,5 +2,5 @@
 
 require 'healing'
 
-h = Healing.new
+h = RemoteHealing.new
 h.heal

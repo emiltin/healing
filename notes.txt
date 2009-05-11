@@ -9,35 +9,30 @@ files are uploaded
 ideal.rb are run on the nodes
 
 
-
-
-somehow the nodes need to know what cloud they're in. they need an identity. is someone going to tell them? or should they decide themselves?
-
-
-
-
-
+somehow the nodes need to know what cloud they're in. they need an identity. is someone going to tell them? or should they decide themselves? [update: in ideal.rb, each clouds is assigned an uuid, which is then stored on the nodes at /healing/cloud_uuid]
 
 ideal.rb describe the cloud. it can be read on the host to provision and bootstrap the cloud. it can also be read on the node to do the actual configuration. this requires that the node knows what subcloud it's in.
 
 
-what happens when the names of the clouds change - how does nodes know what cloud they belong to then?
+what happens when the names of the clouds change - how does nodes know what cloud they belong to then? [update: using uuids solve this this problem.]
 
-
-cloud - subclouds
 
 
 each cloud has a uuid, which is set by the user, and should not be changed.
 when launching nodes, the uuid is stored on the nodes. that way each node can read ideal.rb and know what cloud it belongs to.
 all nodes in a cloud are configured exactly similarly. if a special node is neeed, it should be in it's own sub cloud.
 
-launch nodes
-bootstrap
-store cloud uuid
-push ideal.rb
-configure
-
 
 a recipe folder is also pushed, so individual recipes can be run on a specific cloud.
 
+
+
+ok, i can now heal a remote node, which is great!
+next steps:
+-make the ec2 provider real, so we can start and terminate instances, and heal them
+-separate the lib and user files, so ideal.rb can be in a different location
+-handle uploading of recipes
+-link resource
+-repo resource
+-rails resource?
 
