@@ -54,8 +54,9 @@ class Healing
   def heal
     load
     load_addresses
+    puts "\nHealing node #{@addr}."
     install   #should only upload ideal.rb and recipes...
-    puts `ssh -i #{@cloud.key} root@#{@addr} "cd /healing && bin/heal-local"`
+    Healing.run_locally "ssh -i #{@cloud.key} root@#{@addr} \"cd /healing && bin/heal-local\""
   end
 
 end

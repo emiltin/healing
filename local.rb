@@ -25,7 +25,7 @@ class LocalHealing < Healing
   
   def heal
     load
-    puts "Healing started."
+    puts "Beginning to heal..."
     @cloud.heal
     puts "Healing complete. Ahhh!"
   end

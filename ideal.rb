@@ -5,5 +5,6 @@ cloud :test do
   key '/Users/emiltin/.ec2/testpair'
   instances 1
   
+  dir '/tmp/healing'
   file '/etc/motd', :content => "Welcome to your node in the 'test' cloud."
 end
