@@ -23,7 +23,7 @@ class Healing
     def heal
       raise "This node has no cloud uuid yet!" unless @uuid
       require 'clouds.rb'
-      cloud = Healing::Cloud.clouds.first.find_cloud @uuid
+      cloud = Healing::Cloud.find_cloud_with_uuid @uuid
       if cloud
         puts "Healing started."
         cloud.heal

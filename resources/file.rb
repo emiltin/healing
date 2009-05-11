@@ -27,7 +27,8 @@ class Healing
     end
  
     def describe options={}
-      log "file: #{@path}"
+      info = @options[:content] ? " (#{@options[:content][0..10]}...)" : nil
+      log "file: #{@path}#{info}"
     end
     
   end

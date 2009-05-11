@@ -3,4 +3,4 @@
 require 'healing'
 
 h = Healing.new
-h.heal
+h.start
