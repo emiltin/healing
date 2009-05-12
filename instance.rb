@@ -1,14 +1,15 @@
 require 'healing'
 
 
-class LocalHealing < Healing
+class Instance < Healing
   
   CLOUD_UUID_PATH = '/healing/cloud_uuid'
-  def load
+  
+  def initialize
     load_cloud_uuid
     super
     @cloud = Healing::Cloud.find_cloud_with_uuid @uuid
-    raise "No cloud found matching the uuid (#{@uuid.inspect}) of of this node!" unless @cloud
+    raise "No cloud found matching the uuid (#{@uuid.inspect}) of of this instance!" unless @cloud
   end
     
   def save_cloud_uuid uuid
@@ -20,11 +21,10 @@ class LocalHealing < Healing
   def load_cloud_uuid
     raise "Cloud uuid file not found at #{CLOUD_UUID_PATH}!" unless ::File.exist?(CLOUD_UUID_PATH)
     @uuid = ::File.read(CLOUD_UUID_PATH).strip
-    raise "This node has no cloud uuid yet!" unless @uuid
+    raise "This instance has no cloud uuid yet!" unless @uuid
   end
   
   def heal
-    load
     puts "Beginning to heal..."
     @cloud.heal
     puts "Healing complete. Ahhh!"

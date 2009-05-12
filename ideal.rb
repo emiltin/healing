@@ -6,5 +6,5 @@ cloud :test do
   instances 1
   
   dir '/tmp/healing'
-  file '/etc/motd', :content => "Welcome to your node in the 'test' cloud."
+  file '/etc/motd', :content => "Welcome to your your healing instance!"
 end

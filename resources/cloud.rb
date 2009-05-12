@@ -1,7 +1,7 @@
 class Healing
   class Cloud < Resource
     
-    attr_accessor :resources, :uuid, :name, :depth, :children, :instances, :key
+    attr_accessor :resources, :uuid, :name, :depth, :children, :instances
     
     class << self
       attr_accessor :root
@@ -31,7 +31,7 @@ class Healing
     def describe options={}
       log "cloud: #{@name}", -1
       log "uuid: #{@uuid}"
-      log "key: #{@key}" if @key
+      log "key: #{@key}" if key_path
       log "instances: #{@instances}" if @instances
       @resources.each { |item| item.describe options }
       @children.each { |item| item.describe options } if options[:recurse]
@@ -53,6 +53,14 @@ class Healing
     def key= key
       raise "Error in cloud '#{@name}': The key can only be set in the root cloud!" unless @depth==0
       @key = key
+    end
+    
+    def key_name
+      ::File.basename @key, ".*"
+    end
+    
+    def key_path
+      @key
     end
     
     def heal

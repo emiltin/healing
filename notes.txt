@@ -30,9 +30,13 @@ a recipe folder is also pushed, so individual recipes can be run on a specific c
 ok, i can now heal a remote node, which is great!
 next steps:
 -make the ec2 provider real, so we can start and terminate instances, and heal them
+-cache node info locally
 -separate the lib and user files, so ideal.rb can be in a different location
 -handle uploading of recipes
+-bootstrapping nodes
 -link resource
 -repo resource
+-package repo
+-providers for resources?
 -rails resource?
 

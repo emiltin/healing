@@ -4,19 +4,25 @@ require 'resources/dir.rb'
 require 'resources/package.rb'
 require 'resources/cloud.rb'
 require 'providers/ec2_provider.rb'
-require 'nodes/node.rb'
-require 'local.rb'
-require 'remote.rb'
+require 'instance_info.rb'
+require 'instance.rb'
+require 'healer.rb'
+require 'map.rb'
 
 
 class Healing
-
-  def self.run_locally cmd
-    result  = `#{cmd}`
-    puts result unless result==''
+  
+  def initialize
+    load_ideal
   end
   
-  def load
+  def self.run_locally cmd, options={}
+    result  = `#{cmd}`
+    puts result unless result=='' || options[:quiet]
+    result
+  end
+  
+  def load_ideal
     return if @cloud
     require 'ideal.rb'
     @cloud = Healing::Cloud.root
