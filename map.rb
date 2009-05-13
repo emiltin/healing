@@ -60,6 +60,7 @@ class Healing
       @instances.each do |i|
         puts "#{i.id.to_s.ljust(12)}\t#{i.state.to_s.ljust(n)}\t#{(i.cloud_uuid=='' ? '?' : i.cloud_uuid).to_s.ljust(n)}\t#{i.address}"
       end
+      puts 'No instances running.' if @instances.empty?
     end
   end
 

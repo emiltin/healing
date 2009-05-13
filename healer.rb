@@ -39,7 +39,7 @@ class Healer < Healing
   
   def map
     @map =  Healing::Map.new @cloud unless @map
-    @addr = @map.instances.first.address        #should ssh to to all instances.....
+    @addr = @map.instances.first.address if @map.instances.any?     #should ssh to to all instances.....
   end
     
   def show
