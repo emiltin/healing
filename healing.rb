@@ -3,11 +3,14 @@ require 'resources/file.rb'
 require 'resources/dir.rb'
 require 'resources/package.rb'
 require 'resources/cloud.rb'
-require 'providers/ec2_provider.rb'
+require 'providers/provider.rb'
+require 'providers/ec2.rb'
 require 'instance_info.rb'
 require 'instance.rb'
 require 'healer.rb'
 require 'map.rb'
+
+CLOUD_UUID_PATH = '/healing/cloud_uuid'
 
 
 class Healing

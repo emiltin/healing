@@ -1,5 +1,3 @@
-
-
 when you run cloud start locally:
 the ideal.rb file is read
 cloud object structure now has all info, including number of nodes, and provider
@@ -29,8 +27,8 @@ a recipe folder is also pushed, so individual recipes can be run on a specific c
 
 ok, i can now heal a remote node, which is great!
 next steps:
--make the ec2 provider real, so we can start and terminate instances, and heal them
--cache node info locally
+-make the ec2 provider real, so we can start and terminate instances, and heal them HALF DONE
+-cache node info locally DONE update: only caching id->cloud_uuid pairs, everything else is read each time from the provider
 -separate the lib and user files, so ideal.rb can be in a different location
 -handle uploading of recipes
 -bootstrapping nodes
@@ -39,4 +37,6 @@ next steps:
 -package repo
 -providers for resources?
 -rails resource?
+-ssh to multiple instances. threads or sequentially? handle output
 
+next up: match map agains ideal, and launch/terminate instances as needed

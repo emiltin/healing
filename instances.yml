@@ -1,4 +1,5 @@
 --- 
-- :address: ec2-174-129-95-238.compute-1.amazonaws.com
-  :key: testpair
+- :cloud_uuid: 1vd74jvj3j3
   :id: i-e1d5a588
+- :cloud_uuid: ""
+  :id: i-e7bdcf8e

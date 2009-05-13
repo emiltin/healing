@@ -2,9 +2,7 @@ require 'healing'
 
 
 class Instance < Healing
-  
-  CLOUD_UUID_PATH = '/healing/cloud_uuid'
-  
+    
   def initialize
     load_cloud_uuid
     super

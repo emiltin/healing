@@ -20,44 +20,45 @@ class Healing
     end
 
     def save
-      #info = [ { :id => 1, :cloud_uuid => '4jvjj232', :address => "ec2-324.34.34.34.com" } ]   #test
       info = []
-      @instances.each { |i| info << i.to_yaml }
+      @instances.each { |i| info << { :id => i.id, :cloud_uuid => i.cloud_uuid } }
       ::File.open( @path, "w") { |f| YAML.dump(info,f) }
     end
     
     def update
-      ec2 = Healing::EC2Provider.new
-      currrent_instances = ec2.instances_with_key @cloud.key_name
+      old_instances = @instances.dup
+      @instances = @cloud.provider.instances_with_key @cloud.key_name
       
-      remove = []     #remove outdated info
-      @instances.each do |old|
-        remove << old unless currrent_instances.find { |cur| cur.id==old.id }
-      end
-      
-      add = []        #add new info
-      currrent_instances.each do |cur|
-        unless @instances.find { |old| cur.id==old.id }
+    #  remove = []     #remove outdated info
+    #  @instances.each do |old|
+    #    remove << old unless currrent_instances.find { |cur| cur.id==old.id }
+    #  end
+      updates = []
+      @instances.each do |cur|
+        old = old_instances.find { |old| cur.id==old.id }
+        if old
+          cur.cloud_uuid = old.cloud_uuid
+        else
           cur.fetch_cloud_uuid @cloud
-          add << cur
+          updates << cur
         end
       end
       
-      if remove.any? || add.any?
-        @instances -= remove
-        @instances += add
-        puts "Updated cloud map: #{remove.size} outdated, #{add.size} new."
+      if updates.any?
+        puts "Updated cloud map: #{updates.size} instances."
         save
       else
-        puts 'Cloud map up-to-date.'
+        puts 'Cloud map ready.'
       end
     end
         
     def show
       puts "Cloud: #{@cloud.name}"
       puts "Key: #{@cloud.key_name}"
+      n = 20
+      puts "#{'instance id'.ljust(12)}\t#{'state'.ljust(n)}\t#{'cloud uuid'.ljust(n)}\taddress" if @instances.any?
       @instances.each do |i|
-        puts "#{i.id}\t#{i.address}\t#{i.cloud_uuid}"
+        puts "#{i.id.to_s.ljust(12)}\t#{i.state.to_s.ljust(n)}\t#{(i.cloud_uuid=='' ? '?' : i.cloud_uuid).to_s.ljust(n)}\t#{i.address}"
       end
     end
   end

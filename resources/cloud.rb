@@ -1,7 +1,7 @@
 class Healing
   class Cloud < Resource
     
-    attr_accessor :resources, :uuid, :name, :depth, :children, :instances
+    attr_accessor :resources, :uuid, :name, :depth, :children, :instances, :provider, :image
     
     class << self
       attr_accessor :root
@@ -24,32 +24,41 @@ class Healing
       unless parent
         raise "You can only define one root cloud!" if Cloud.root
         Cloud.root = self
+        raise "You must specify a provider in the root cloud!" unless @provider
+        raise "You must specify an image in the root cloud!" unless @image
       end
       Cloud.clouds << self  
     end
-  
+    
+    def provision
+      #should match ideal against map, and launch/terminate instances as needed...
+      
+      #instance = provider.launch_instances :image => image, :key_name => key_name
+      #wait for instances to boot, and get an address..
+    end
+    
     def describe options={}
       log "cloud: #{@name}", -1
       log "uuid: #{@uuid}"
       log "key: #{@key}" if key_path
       log "instances: #{@instances}" if @instances
+      log "provider: #{@provider.name}" if @provider
       @resources.each { |item| item.describe options }
       @children.each { |item| item.describe options } if options[:recurse]
+    end
+    
+    def provider
+      @parent ? @parent.provider : @provider
+    end
+    
+    def image
+      @parent ? @parent.image : @image
     end
     
     def self.find_cloud_with_uuid uuid
       @@clouds.find { |c| c.uuid==uuid }
     end
     
-#    def find_cloud uuid
-#      return self if @uuid==uuid.to_s
-#      @children.each do |item|
-#        cloud = item.find_cloud uuid
-#        return cloud if cloud
-#      end
-#      nil
-#    end
-#    
     def key= key
       raise "Error in cloud '#{@name}': The key can only be set in the root cloud!" unless @depth==0
       @key = key
@@ -65,7 +74,7 @@ class Healing
     
     def heal
       log "cloud: #{@name}", -1
- #     raise "A cloud with resources must have some instances!" if @instances.empty? && @resources.any?
+      raise "A cloud with resources must have some instances!" if @instances==nil && @resources.any?
       @resources.each { |item| item.heal }
     end
 
@@ -85,6 +94,15 @@ class Healing
       def instances number
         @cloud.instances = number
       end
+      
+      def image i
+        @cloud.image = i
+      end
+      
+      def provider p
+        @cloud.provider = Healing::Provider.build p
+      end
+      
       def uuid u
         @cloud.uuid = u.to_s
       end

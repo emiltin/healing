@@ -19,7 +19,3 @@ class Healing
   end
 
 end
-
-def package package, options={}
-  r = Healing::Package.new package, options
-end

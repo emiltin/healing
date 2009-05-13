@@ -20,6 +20,7 @@ class Healer < Healing
   
   def start
     map
+    provision
     install
     set_cloud_uuid
     heal
@@ -32,9 +33,13 @@ class Healer < Healing
     Healing.run_locally "ssh -i #{@cloud.key_path} root@#{@addr} \"cd /healing && bin/heal-local\""
   end
   
+  def provision
+    @cloud.provision
+  end
+  
   def map
     @map =  Healing::Map.new @cloud unless @map
-    @addr = @map.instances.first.address   
+    @addr = @map.instances.first.address        #should ssh to to all instances.....
   end
     
   def show
