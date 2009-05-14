@@ -27,7 +27,7 @@ a recipe folder is also pushed, so individual recipes can be run on a specific c
 
 ok, i can now heal a remote node, which is great!
 next steps:
--make the ec2 provider real, so we can start and terminate instances, and heal them HALF DONE
+-make the ec2 provider real, so we can start and terminate instances, and heal them MOSTLY DONE
 -cache node info locally DONE update: only caching id->cloud_uuid pairs, everything else is read each time from the provider
 -separate the lib and user files, so ideal.rb can be in a different location
 -handle uploading of recipes
@@ -40,3 +40,14 @@ next steps:
 -ssh to multiple instances. threads or sequentially? handle output
 
 next up: match map agains ideal, and launch/terminate instances as needed
+
+
+how to organize clouds, healer and mapper? what contains what?
+it's important that the code running on the instances doesn't require the provisioner, since it requires the ec2 gem which might not be installed.
+should clouds be able to provision themselves? or is it done from the 'outside' by the healer?
+is provisioning ever done from an instances? yeah it might be if the clouds is able to autosscale.
+
+
+cool, i can now start a cloud and the instance will be launched and healed, all in one go!
+is the cloud map really needed? do we care what instances are in hat cloud? we can just ask each instance if needed. it's a bit slower, but probably more robust? hmm in fact the map is quite robust, because we do sync with the list of instances each time to use it. as long as cloud uuid's don't change on the instances it should be valid, and provide a small speedup.. but it adds code complexity. simpler to simply build the map each time.
+

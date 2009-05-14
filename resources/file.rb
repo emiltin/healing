@@ -1,4 +1,4 @@
-class Healing
+module Healing
  
   class File <  Resource
   
@@ -14,16 +14,16 @@ class Healing
     def heal
       describe
       if @options[:source]
-        Healing.run_locally "cp #{@options[:source]} #{@path}"
+        Healing::Healer.run_locally "cp #{@options[:source]} #{@path}"
       else
-        Healing.run_locally "echo '#{@options[:content]}' > #{@path}"
+        Healing::Healer.run_locally "echo '#{@options[:content]}' > #{@path}"
       end  
-      Healing.run_locally "chmod '#{@options[:mode]}' #{@path}" if @options[:mode]
+      Healing::Healer.run_locally "chmod '#{@options[:mode]}' #{@path}" if @options[:mode]
     end
     
     def revert
       @cloud.log "reverting file '#{@path}'"
-      Healing.run_locally "rm #{@path}"
+      Healing::Healer.run_locally "rm #{@path}"
     end
  
     def describe options={}

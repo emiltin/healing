@@ -1,13 +1,13 @@
-require 'healing'
 
-class Healing
+module Healing
   
   class Map
     
     attr_reader :instances
     
-    def initialize cloud
+    def initialize cloud, provider
       @cloud = cloud
+      @provider = provider
       @path = 'instances.yml'
       @instances = []
       load
@@ -16,7 +16,7 @@ class Healing
     
     def load
       info = YAML.load_file @path if ::File.exists? @path
-      info.each { |item| @instances << InstanceInfo.new(item) } if info
+      info.each { |item| @instances << RemoteInstance.new(item) } if info
     end
 
     def save
@@ -26,13 +26,11 @@ class Healing
     end
     
     def update
+      puts 'Syncing cloud map.'
       old_instances = @instances.dup
-      @instances = @cloud.provider.instances_with_key @cloud.key_name
+      @instances = @provider.instances_with_key @cloud.key_name
+      @instances.reject! { |i| i.state!='running' }
       
-    #  remove = []     #remove outdated info
-    #  @instances.each do |old|
-    #    remove << old unless currrent_instances.find { |cur| cur.id==old.id }
-    #  end
       updates = []
       @instances.each do |cur|
         old = old_instances.find { |old| cur.id==old.id }
@@ -43,24 +41,25 @@ class Healing
           updates << cur
         end
       end
-      
       if updates.any?
-        puts "Updated cloud map: #{updates.size} instances."
+        puts "Added #{updates.size} new instance(s) to cloud map."
         save
-      else
-        puts 'Cloud map ready.'
       end
     end
-        
+    
     def show
       puts "Cloud: #{@cloud.name}"
       puts "Key: #{@cloud.key_name}"
       n = 20
       puts "#{'instance id'.ljust(12)}\t#{'state'.ljust(n)}\t#{'cloud uuid'.ljust(n)}\taddress" if @instances.any?
       @instances.each do |i|
-        puts "#{i.id.to_s.ljust(12)}\t#{i.state.to_s.ljust(n)}\t#{(i.cloud_uuid=='' ? '?' : i.cloud_uuid).to_s.ljust(n)}\t#{i.address}"
+        puts "#{i.id.to_s.ljust(12)}\t#{i.state.to_s.ljust(n)}\t#{(i.cloud_uuid=='' ? '-' : i.cloud_uuid).to_s.ljust(n)}\t#{i.address}"
       end
       puts 'No instances running.' if @instances.empty?
+    end
+    
+    def instances_in_cloud uuid
+      @instances.find_all { |i| i.cloud_uuid==uuid.to_s }
     end
   end
 

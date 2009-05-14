@@ -2,5 +2,5 @@
 
 require 'healing'
 
-healer = Instance.new
+healer = Healing::Instance.new
 healer.heal

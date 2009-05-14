@@ -8,5 +8,5 @@ cloud :test do
   uuid '1vd74jvj3j3'
   
   dir '/tmp/healing'
-  file '/etc/motd', :content => "Welcome to your your healing instance!"
+  file '/etc/motd', :content => "Welcome to your healthy instance!"
 end

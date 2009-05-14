@@ -1,5 +1,5 @@
 
-class Healing
+module Healing
   class Provider
     
     def self.build name

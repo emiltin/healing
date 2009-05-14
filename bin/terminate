@@ -4,4 +4,4 @@ require 'healing'
 require 'actors/initiator'
 
 h = Healing::Initiator.new
-h.heal
+h.terminate

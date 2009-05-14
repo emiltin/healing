@@ -1,4 +1,4 @@
-class Healing
+module Healing
   
    class Resource
   

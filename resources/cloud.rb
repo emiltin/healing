@@ -1,7 +1,7 @@
-class Healing
+module Healing
   class Cloud < Resource
     
-    attr_accessor :resources, :uuid, :name, :depth, :children, :instances, :provider, :image
+    attr_accessor :resources, :uuid, :name, :depth, :subclouds, :instances, :provider, :image
     
     class << self
       attr_accessor :root
@@ -17,7 +17,7 @@ class Healing
       @parent = parent
       @name = name
       @resources = []
-      @children = []
+      @subclouds = []
       @depth = @parent ? @parent.depth+1 : 0
       Lingo.new(self).instance_eval &block
       raise "Cloud uuid not set in '#{name}'" unless @uuid
@@ -30,21 +30,14 @@ class Healing
       Cloud.clouds << self  
     end
     
-    def provision
-      #should match ideal against map, and launch/terminate instances as needed...
-      
-      #instance = provider.launch_instances :image => image, :key_name => key_name
-      #wait for instances to boot, and get an address..
-    end
-    
     def describe options={}
       log "cloud: #{@name}", -1
       log "uuid: #{@uuid}"
       log "key: #{@key}" if key_path
       log "instances: #{@instances}" if @instances
-      log "provider: #{@provider.name}" if @provider
+      log "provider: #{@provider}" if @provider
       @resources.each { |item| item.describe options }
-      @children.each { |item| item.describe options } if options[:recurse]
+      @subclouds.each { |item| item.describe options } if options[:recurse]
     end
     
     def provider
@@ -100,7 +93,7 @@ class Healing
       end
       
       def provider p
-        @cloud.provider = Healing::Provider.build p
+        @cloud.provider = p
       end
       
       def uuid u
@@ -108,7 +101,7 @@ class Healing
       end
     
       def cloud name, &block
-        @cloud.children << Cloud.new(name, @cloud, &block)
+        @cloud.subclouds << Cloud.new(name, @cloud, &block)
       end
     
       def file path, options={}
