@@ -5,13 +5,13 @@ module Healing
     
     attr_reader :instances
     
-    def initialize cloud, provider
+    def initialize cloud
       @cloud = cloud
-      @provider = provider
-      @path = 'instances.yml'
+#      @path = 'instances.yml'
       @instances = []
-      load
-      update
+#      load
+#      update
+#      build
     end
     
     def load
@@ -24,11 +24,20 @@ module Healing
       @instances.each { |i| info << { :id => i.id, :cloud_uuid => i.cloud_uuid } }
       ::File.open( @path, "w") { |f| YAML.dump(info,f) }
     end
-    
+
+    def rebuild
+#      puts 'Rebuilding cloud map.'
+      @instances = @cloud.root.provider.instances :key => @cloud.root.key_name, :state => :running
+      @instances.each do |i| 
+        i.cloud = @cloud
+        i.fetch_cloud_uuid     #ssh to each instance and read the cloud_uuid file
+      end
+    end
+      
     def update
       puts 'Syncing cloud map.'
       old_instances = @instances.dup
-      @instances = @provider.instances_with_key @cloud.key_name
+      @instances = @cloud.root.provider.instances_with_key @cloud.key_name
       @instances.reject! { |i| i.state!='running' }
       
       updates = []
@@ -48,10 +57,11 @@ module Healing
     end
     
     def show
+      rebuild
       puts "Cloud: #{@cloud.name}"
       puts "Key: #{@cloud.key_name}"
       n = 20
-      puts "#{'instance id'.ljust(12)}\t#{'state'.ljust(n)}\t#{'cloud uuid'.ljust(n)}\taddress" if @instances.any?
+      puts "#{'instance'.ljust(12)}\t#{'state'.ljust(n)}\t#{'cloud'.ljust(n)}\taddress" if @instances.any?
       @instances.each do |i|
         puts "#{i.id.to_s.ljust(12)}\t#{i.state.to_s.ljust(n)}\t#{(i.cloud_uuid=='' ? '-' : i.cloud_uuid).to_s.ljust(n)}\t#{i.address}"
       end

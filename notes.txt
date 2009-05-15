@@ -51,3 +51,18 @@ is provisioning ever done from an instances? yeah it might be if the clouds is a
 cool, i can now start a cloud and the instance will be launched and healed, all in one go!
 is the cloud map really needed? do we care what instances are in hat cloud? we can just ask each instance if needed. it's a bit slower, but probably more robust? hmm in fact the map is quite robust, because we do sync with the list of instances each time to use it. as long as cloud uuid's don't change on the instances it should be valid, and provide a small speedup.. but it adds code complexity. simpler to simply build the map each time.
 
+todo: add new instances to known_hosts file automatically. [instead, using Net::SSH, and we can pass :paranoid => false
+
+
+cloud: describes the ideal.
+cloud provider: launching/term/desc instances
+healer: orchestrates healing process
+map: ? can this just be handles by the cloud and it's list of instances?
+key: key file
+
+healer - cloud - subclouds - instances
+
+
+say a cloudsystem is missing 10 instance, in 3 subclouds
+we launch 10 instances.
+then we want to divide the pool of 10 new instances to the subclouds that wanted them
