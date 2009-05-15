@@ -26,7 +26,7 @@ module Healing
     end
 
     def rebuild
-#      puts 'Rebuilding cloud map.'
+      puts 'Syncing cloud map.'
       @instances = @cloud.root.provider.instances :key => @cloud.root.key_name, :state => :running
       @instances.each do |i| 
         i.cloud = @cloud

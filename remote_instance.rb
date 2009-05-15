@@ -21,6 +21,7 @@ module Healing
     
     def belong cloud
       @cloud = cloud
+  #    puts "#{id} => #{@cloud.uuid}"
       execute "mkdir /healing && echo '#{@cloud.uuid}' > /healing/cloud_uuid", :quiet => true
     end
     
@@ -30,7 +31,7 @@ module Healing
       Net::SSH.start( address, 'root', ssh_options) do |ssh|  
         ssh.exec!(command) do |ch, stream, data|
           if stream == :stdout
-            puts data.split("\n").map { |line| " #{address}  |  #{line}" } unless options[:quiet]
+            puts data.split("\n").map { |line| "#{address.rjust(50,' ')}  |  #{line}" } unless options[:quiet]
             out << data
           else
             $stderr.puts "  [#{address}] ERROR: #{data}"# unless options[:quiet]

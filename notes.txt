@@ -66,3 +66,5 @@ healer - cloud - subclouds - instances
 say a cloudsystem is missing 10 instance, in 3 subclouds
 we launch 10 instances.
 then we want to divide the pool of 10 new instances to the subclouds that wanted them
+
+alright! i can now pretty much launch a cloud with multiple instances! todo: ruby rsync, to avoid ssh warnings in the terminal

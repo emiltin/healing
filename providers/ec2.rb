@@ -1,3 +1,5 @@
+require 'pp'
+
 module Healing
   module Provider
     class EC2 < Base
@@ -24,17 +26,18 @@ module Healing
     
       def instances options
         instances = []
-        lib.describe_instances.reservationSet.item.each do |item|
-          i = item.instancesSet.item[0]
-          next if options[:key] && (i.keyName != options[:key].to_s)
-          next if options[:state] && (i.instanceState.name != options[:state].to_s)
-          instances << RemoteInstance.new( :id => i.instanceId, :key => i.keyName, :address => i.dnsName, :state => i.instanceState.name )
+        lib.describe_instances.reservationSet.item.each do |reservationSet|
+          reservationSet.instancesSet.item.each do |i|
+            next if options[:key] && (i.keyName != options[:key].to_s)
+            next if options[:state] && (i.instanceState.name != options[:state].to_s)
+            instances << RemoteInstance.new( :id => i.instanceId, :key => i.keyName, :address => i.dnsName, :state => i.instanceState.name )
+          end
         end
         instances
       end
     
       def launch options
-        response = lib.run_instances :instances => options[:num], :image_id => options[:image], :key_name => options[:key]
+        response = lib.run_instances :min_count => options[:num], :max_count => options[:num], :image_id => options[:image], :key_name => options[:key]
         num = response.instancesSet.item.size
         instances = []
         response.instancesSet.item.each do |item|
@@ -53,17 +56,22 @@ module Healing
         120.times do  #keep trying for 10 minutes
           response = lib.describe_instances
           todo.each do |instance|
-            item = response.reservationSet.item.find { |i| i.instancesSet.item[0].instanceId==instance.id }
-            raise "No instance running with id #{instance.id}!" unless item
-            info = item.instancesSet.item[0]
-            if info.dnsName && info.dnsName!=''
-              instance.address = info.dnsName       #store address in RemoteInstance object
-              done << instance
-            else
-              printf '.'
-              STDOUT.flush
-              sleep 5
-              break
+            response.reservationSet.item.each do |r|
+              r.instancesSet.item.each do |info|
+                instance = instances.find { |i| i.id==info.instanceId }   #included in list of instances to check?
+                if instance
+                  raise "Instance #{info.instanceId} is terminated!" if info.instanceState.name=='terminated'
+                  if info.dnsName && info.dnsName!=''
+                    instance.address = info.dnsName       #store address in RemoteInstance object
+                    done << instance
+                  else
+                    printf '.'
+                    STDOUT.flush
+                    sleep 5
+                    break
+                  end
+                end
+              end              
             end
           end
           todo -= done

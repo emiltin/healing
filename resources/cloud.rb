@@ -142,7 +142,7 @@ module Healing
       end
 
       def cloud name, &block
-        @cloud.subclouds << Cloud.new(name, @cloud, &block)
+        @cloud.subclouds << Cloud.new( {:name=>name, :root => @cloud.root, :parent => @cloud}, &block)
       end
 
       def file path, options={}
@@ -217,7 +217,7 @@ module Healing
         organize
         bootstrap
       end
-      install
+  #    install
       heal_remote
     end
     
@@ -228,8 +228,9 @@ module Healing
     end
 
     def launch
-      puts "Launching #{@armed.size} instance(s)."
-      @launched = provider.launch :num => @armed.size, :key => key_name, :image => image
+      num = @armed.values.inject { |n,v| n+v }
+      puts "Launching #{num} instance(s)."
+      @launched = provider.launch :num => num, :key => key_name, :image => image
     end
   
     def organize
@@ -260,6 +261,7 @@ module Healing
       install
       puts "Healing instances."
       map.instances.each do |i|
+        puts "\n"
         i.execute "cd /healing && bin/heal-local"
       end
     end
