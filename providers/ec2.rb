@@ -60,15 +60,16 @@ module Healing
               r.instancesSet.item.each do |info|
                 instance = instances.find { |i| i.id==info.instanceId }   #included in list of instances to check?
                 if instance
-                  raise "Instance #{info.instanceId} is terminated!" if info.instanceState.name=='terminated'
-                  if info.dnsName && info.dnsName!=''
-                    instance.address = info.dnsName       #store address in RemoteInstance object
-                    done << instance
-                  else
-                    printf '.'
-                    STDOUT.flush
-                    sleep 5
-                    break
+                  if ['pending','running'].include? info.instanceState.name
+                    if info.dnsName && info.dnsName!=''
+                      instance.address = info.dnsName       #store address in RemoteInstance object
+                      done << instance
+                    else
+                      printf '.'
+                      STDOUT.flush
+                      sleep 5
+                      break
+                    end
                   end
                 end
               end              

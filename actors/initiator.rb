@@ -28,7 +28,7 @@ module Healing
       @cloud.heal_remote
     end
 
-    def map
+    def scan
       @cloud.map.show
     end
     

@@ -31,16 +31,26 @@ module Healing
       Net::SSH.start( address, 'root', ssh_options) do |ssh|  
         ssh.exec!(command) do |ch, stream, data|
           if stream == :stdout
-            puts data.split("\n").map { |line| "#{address.rjust(50,' ')}  |  #{line}" } unless options[:quiet]
+            puts format_block(data) unless options[:quiet]
+#            puts format_block(data) unless options[:quiet]
             out << data
           else
-            $stderr.puts "  [#{address}] ERROR: #{data}"# unless options[:quiet]
+            $stderr.puts format_block(data, 'ERROR: ')
           end
         end
       end
       out
     end
-
+    
+    def format_block data, s=''
+      data.split("\n").map { |line| [address,': ', s,line,"\n"]}.flatten.join
+      #width = 60
+      #data = data.split("\n").map { |line| [' '*width,' | ', line,"\n"]}.flatten
+      #data[0] = [s,address].join(' ').rjust(width,' ')
+      #data = data.flatten.join
+      #data
+    end
+    
   end
 
 end

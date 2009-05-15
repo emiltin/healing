@@ -26,7 +26,7 @@ module Healing
     end
 
     def rebuild
-      puts 'Syncing cloud map.'
+      puts "Scanning cloud."
       @instances = @cloud.root.provider.instances :key => @cloud.root.key_name, :state => :running
       @instances.each do |i| 
         i.cloud = @cloud
@@ -35,7 +35,7 @@ module Healing
     end
       
     def update
-      puts 'Syncing cloud map.'
+      puts "Scanning cloud '#{@cloud.name}'."
       old_instances = @instances.dup
       @instances = @cloud.root.provider.instances_with_key @cloud.key_name
       @instances.reject! { |i| i.state!='running' }
@@ -58,12 +58,12 @@ module Healing
     
     def show
       rebuild
-      puts "Cloud: #{@cloud.name}"
-      puts "Key: #{@cloud.key_name}"
       n = 20
       puts "#{'instance'.ljust(12)}\t#{'state'.ljust(n)}\t#{'cloud'.ljust(n)}\taddress" if @instances.any?
       @instances.each do |i|
-        puts "#{i.id.to_s.ljust(12)}\t#{i.state.to_s.ljust(n)}\t#{(i.cloud_uuid=='' ? '-' : i.cloud_uuid).to_s.ljust(n)}\t#{i.address}"
+        c = Cloud.clouds.find { |c| c.uuid==i.cloud_uuid }
+        cloud_name = c ? "#{' '*c.depth}#{c.name}" : '-'
+        puts "#{i.id.to_s.ljust(12)}\t#{i.state.to_s.ljust(n)}\t#{cloud_name.to_s.ljust(n)}\t#{i.address}"
       end
       puts 'No instances running.' if @instances.empty?
     end
