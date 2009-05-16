@@ -28,7 +28,7 @@ module Healing
     def arm_subcloud
       cur = root.map.instances.select { |i| i.cloud_uuid==@uuid }.size   
       n = @num_instances - cur
-      root.armed[self] = n if n>0
+      n.times { root.armed << self } if n>0
       @subclouds.each { |c| c.arm_subcloud } 
     end
     

@@ -1,6 +1,6 @@
 
 module Healing
-
+  
   class Healer
     def initialize
       load_ideal

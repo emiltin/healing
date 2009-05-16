@@ -1,3 +1,4 @@
+require 'threading'
 require 'resources/resource'
 require 'resources/file'
 require 'resources/dir'

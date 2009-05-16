@@ -3,6 +3,8 @@ module Healing
   
   class Map
     
+    include Threading
+    
     attr_reader :instances
     
     def initialize cloud
@@ -24,18 +26,19 @@ module Healing
       @instances.each { |i| info << { :id => i.id, :cloud_uuid => i.cloud_uuid } }
       ::File.open( @path, "w") { |f| YAML.dump(info,f) }
     end
-
+    
     def rebuild
-      puts "Scanning cloud."
-      @instances = @cloud.root.provider.instances :key => @cloud.root.key_name, :state => :running
-      @instances.each do |i| 
-        i.cloud = @cloud
-        i.fetch_cloud_uuid     #ssh to each instance and read the cloud_uuid file
+      puts_progress "Scanning cloud" do
+        @instances = @cloud.root.provider.instances :key => @cloud.root.key_name, :state => :running
+        @instances.each_in_thread do |i|
+          i.cloud = @cloud
+          i.fetch_cloud_uuid     #ssh to each instance and read the cloud_uuid file
+        end
       end
     end
       
     def update
-      puts "Scanning cloud '#{@cloud.name}'."
+      puts "Scanning cloud '#{@cloud.name}'"
       old_instances = @instances.dup
       @instances = @cloud.root.provider.instances_with_key @cloud.key_name
       @instances.reject! { |i| i.state!='running' }

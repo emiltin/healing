@@ -3,7 +3,9 @@ require 'pp'
 module Healing
   module Provider
     class EC2 < Base
-    
+      
+      include Threading
+      
       @@ec2 = nil
     
       def initialize options
@@ -49,63 +51,38 @@ module Healing
       end
 
       def wait_for_addresses instances
-        printf 'Waiting for instances to acquire addresses..'
-        STDOUT.flush
-        todo = instances.dup
-        done = []     
-        120.times do  #keep trying for 10 minutes
-          response = lib.describe_instances
-          todo.each do |instance|
-            response.reservationSet.item.each do |r|
-              r.instancesSet.item.each do |info|
-                instance = instances.find { |i| i.id==info.instanceId }   #included in list of instances to check?
-                if instance
-                  if ['pending','running'].include? info.instanceState.name
-                    if info.dnsName && info.dnsName!=''
-                      instance.address = info.dnsName       #store address in RemoteInstance object
-                      done << instance
-                    else
-                      printf '.'
-                      STDOUT.flush
-                      sleep 5
-                      break
+        puts_progress "Waiting for instances to acquire addresses" do
+          todo = instances.dup
+          done = []
+          loop do
+            response = lib.describe_instances
+            todo.each do |instance|
+              response.reservationSet.item.each do |r|
+                r.instancesSet.item.each do |info|
+                  instance = instances.find { |i| i.id==info.instanceId }   #included in list of instances to check?
+                  if instance
+                    if ['pending','running'].include? info.instanceState.name
+                      if info.dnsName && info.dnsName!=''
+                        instance.address = info.dnsName       #store address
+             #           puts "i #{instance.id} > #{instance.address}"
+                        done << instance
+                      end
                     end
                   end
-                end
-              end              
+                end              
+              end
             end
-          end
-          todo -= done
-          done = []
-          if todo.empty?
-            puts ' ready.'
-            return
+            todo -= done
+            done = []
+            todo.any? ? sleep(5) : break
           end
         end
-        raise "Instances with key #{key} didn't acquire an address after #{timeout} seconds."
       end
 
       def wait_for_ping instances
-        printf 'Waiting for instances to respond..'
-        STDOUT.flush
-        todo = instances
-        done = []
-        120.times do  #keep trying for 10 minutes
-          todo.each do |instance| 
-            done << instance if ping_port instance.address
-          end
-          todo -= done
-          done = []
-          if todo.empty?
-            puts ' ready.'
-            return
-          end
-          printf '.'
-          STDOUT.flush
-          sleep 5
+        instances.each_in_thread "Waiting for instances to respond", :dot => '.' do |i|
+          sleep 1 until ping_port i.address
         end
-        puts ''
-        raise "#{todo.size} instances with key #{key} didn't doesn't respond!"
       end
     
       def ping_port host, port=22

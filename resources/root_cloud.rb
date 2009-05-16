@@ -2,6 +2,8 @@ module Healing
 
   class RootCloud < Cloud
 
+    include Threading
+
     attr_accessor :provider, :image, :map, :armed
 
     def initialize options, &block
@@ -53,55 +55,56 @@ module Healing
         organize
         bootstrap
       end
-      #    install
       heal_remote
-      puts ''
-      puts 'Cloud started and healed. Feels good!'
     end
 
     def arm
-      @armed = {}
+      @armed = []
       arm_subcloud
       @armed
     end
 
     def launch
-      num = @armed.values.inject { |n,v| n+v }
-      puts "Launching #{num} instance(s)."
-      @launched = provider.launch :num => num, :key => key_name, :image => image
+      puts "Launching #{armed.size} instance(s)."
+      @launched = provider.launch :num => armed.size, :key => key_name, :image => image
     end
 
     def organize
-      puts 'Organizing.'
       unorganized = @launched.dup
-      @armed.each_pair do |c,num|
-        num.times { unorganized.shift.belong c }
+      puts_progress "Organizing" do
+        @armed.each_in_thread do |c|
+          unorganized.shift.belong c
+        end
       end
+      @armed = []
     end
 
     def bootstrap
-      @launched.each do
+      @launched.each_in_thread do
       end
     end
 
     def install
-      puts 'Uploading.'
-      map.instances.each do |instance|
-        #it seems ssh here doesn't work if we use ~ in the path?
-        Healing::Healer.run_locally "rsync -e 'ssh -i #{key_path} -o StrictHostKeyChecking=no' -ar /Users/emiltin/Desktop/healing/ root@#{instance.address}:/healing"
+      puts_progress "Uploading" do
+        map.instances.each_in_thread do |instance|
+          #it seems ssh here doesn't work if we use ~ in the path?
+          Healing::Healer.run_locally "rsync -e 'ssh -i #{key_path} -o StrictHostKeyChecking=no' -ar /Users/emiltin/Desktop/healing/ root@#{instance.address}:/healing"
+        end
       end
     end
 
-
     def heal_remote
-      puts "Initiating healing."
       map.rebuild
       install
-      puts "Healing instances."
-      map.instances.each do |i|
-        puts "\n"
-        i.execute "cd /healing && bin/heal-local"
+      results = {}
+      map.instances.each_in_thread "Healing #{map.instances.size} instances" do |i|
+        results[i] = i.execute "cd /healing && bin/heal-local"
       end
+      results.each_pair do |i,r|
+        puts "--------------- #{i.address} ---------------".ljust(80,'-')
+        puts r
+      end
+      puts '-'*80
     end
 
     def first_instances

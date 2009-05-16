@@ -39,7 +39,7 @@ next steps:
 -rails resource?
 -ssh to multiple instances. threads or sequentially? handle output
 
-next up: match map agains ideal, and launch/terminate instances as needed
+next up: match map against ideal, and launch/terminate instances as needed
 
 
 how to organize clouds, healer and mapper? what contains what?

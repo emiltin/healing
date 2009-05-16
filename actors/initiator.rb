@@ -20,6 +20,10 @@ module Healing
       @cloud.start
     end
 
+    def upload
+      @cloud.install
+    end
+
     def terminate
       @cloud.terminate
     end

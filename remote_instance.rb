@@ -21,7 +21,6 @@ module Healing
     
     def belong cloud
       @cloud = cloud
-  #    puts "#{id} => #{@cloud.uuid}"
       execute "mkdir /healing && echo '#{@cloud.uuid}' > /healing/cloud_uuid", :quiet => true
     end
     
@@ -30,20 +29,17 @@ module Healing
       out = ''
       Net::SSH.start( address, 'root', ssh_options) do |ssh|  
         ssh.exec!(command) do |ch, stream, data|
-          if stream == :stdout
-            puts format_block(data) unless options[:quiet]
-#            puts format_block(data) unless options[:quiet]
-            out << data
-          else
-            $stderr.puts format_block(data, 'ERROR: ')
-          end
+          out << data
         end
       end
       out
     end
     
     def format_block data, s=''
+      #"#{address}:\n#{data}"
+      
       data.split("\n").map { |line| [address,': ', s,line,"\n"]}.flatten.join
+      
       #width = 60
       #data = data.split("\n").map { |line| [' '*width,' | ', line,"\n"]}.flatten
       #data[0] = [s,address].join(' ').rjust(width,' ')
