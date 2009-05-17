@@ -40,11 +40,13 @@ module Healing
     end
 
     def terminate
-      map.rebuild
-      if map.instances.any?
-        provider.terminate map.instances
+      puts "Terminating cloud '#{name}'."
+      #our map only includes running instances, but we also want to terminate pending instances
+      list = provider.instances(:key => key_name).select { |i| i.state=='pending' || i.state=='running' }
+      if list.any?
+        provider.terminate list
       else
-        puts "No instances to terminate."
+        puts "No instances running."
       end
     end
 
@@ -81,6 +83,10 @@ module Healing
 
     def bootstrap
       @launched.each_in_thread do
+        #what is needed here? ex:
+        #update os
+        #install rubygems
+        #install healing from repo
       end
     end
 
@@ -88,7 +94,8 @@ module Healing
       puts_progress "Uploading" do
         map.instances.each_in_thread do |instance|
           #it seems ssh here doesn't work if we use ~ in the path?
-          Healing::Healer.run_locally "rsync -e 'ssh -i #{key_path} -o StrictHostKeyChecking=no' -ar /Users/emiltin/Desktop/healing/ root@#{instance.address}:/healing"
+          Healing::Healer.run_locally "rsync -e 'ssh -i #{key_path} -o StrictHostKeyChecking=no' -ar /Users/emiltin/Desktop/healing/ root@#{instance.address}:/healing", :quiet => true
+          #TODO how to handle ssh/rsync error messages?
         end
       end
     end

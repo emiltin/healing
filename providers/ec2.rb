@@ -26,18 +26,20 @@ module Healing
         end
       end
     
-      def instances options
-        instances = []
-        lib.describe_instances.reservationSet.item.each do |reservationSet|
+      def instances options={}
+        instance_list = []
+        h = {}
+        h[:instance_id] = options[:instance_id] if options[:instance_id]
+        lib.describe_instances(h).reservationSet.item.each do |reservationSet|
           reservationSet.instancesSet.item.each do |i|
             next if options[:key] && (i.keyName != options[:key].to_s)
             next if options[:state] && (i.instanceState.name != options[:state].to_s)
-            instances << RemoteInstance.new( :id => i.instanceId, :key => i.keyName, :address => i.dnsName, :state => i.instanceState.name )
+            instance_list << RemoteInstance.new( :id => i.instanceId, :key => i.keyName, :address => i.dnsName, :state => i.instanceState.name )
           end
         end
-        instances
+        instance_list
       end
-    
+
       def launch options
         response = lib.run_instances :min_count => options[:num], :max_count => options[:num], :image_id => options[:image], :key_name => options[:key]
         num = response.instancesSet.item.size
@@ -47,34 +49,23 @@ module Healing
         end
         wait_for_addresses instances
         wait_for_ping instances
-        instances   #note that instances will take a while to launch and boot
+        instances
+      end
+
+      def update instance_list
+        instance_ids = instance_list.map { |i| i.id }
+        updated_list = instances :instance_id => instance_ids
+        instance_list.each { |i| i.update_from updated_list.find { |u| u.id==i.id } }
       end
 
       def wait_for_addresses instances
+        todo = instances.dup  #.select { |i| i.state=='pending' || i.state=='running' }
         puts_progress "Waiting for instances to acquire addresses" do
-          todo = instances.dup
-          done = []
           loop do
-            response = lib.describe_instances
-            todo.each do |instance|
-              response.reservationSet.item.each do |r|
-                r.instancesSet.item.each do |info|
-                  instance = instances.find { |i| i.id==info.instanceId }   #included in list of instances to check?
-                  if instance
-                    if ['pending','running'].include? info.instanceState.name
-                      if info.dnsName && info.dnsName!=''
-                        instance.address = info.dnsName       #store address
-             #           puts "i #{instance.id} > #{instance.address}"
-                        done << instance
-                      end
-                    end
-                  end
-                end              
-              end
-            end
+            update todo
+            done = todo.select { |i| i.address && i.address!='' }
             todo -= done
-            done = []
-            todo.any? ? sleep(5) : break
+            todo.any? ? sleep(1) : break
           end
         end
       end
@@ -92,7 +83,7 @@ module Healing
       def terminate instances
         return unless instances && instances.any?
         production = ['i-7287241b','i-54b51a3d','i-8cc04be5','i-b21181db','i-3f138356']   #safety
-        instances.reject! { |i| i.state!='running' }
+        instances.reject! { |i| i.state=='terminated' }
         instances.each do |i|
           raise "Ups! trying to terminate production instances!" if production.include? i.id.to_s
           puts "terminating instance #{i.id}."

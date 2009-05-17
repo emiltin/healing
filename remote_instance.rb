@@ -3,8 +3,7 @@ module Healing
 
   class RemoteInstance
 
-    attr_accessor :cloud_uuid, :address, :cloud
-    attr_reader :id, :key, :state
+    attr_accessor :cloud_uuid, :address, :cloud, :id, :key, :state
 
     def initialize info
       @id = info[:id]
@@ -14,7 +13,14 @@ module Healing
       @state = info[:state]
       @cloud = info[:cloud]
     end
-
+    
+    def update_from i
+      if i
+        @address = i.address
+        @state = i.state
+      end
+    end 
+      
     def fetch_cloud_uuid
       @cloud_uuid = execute("cat #{CLOUD_UUID_PATH}", :quiet => true).strip
     end

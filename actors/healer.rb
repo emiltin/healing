@@ -1,3 +1,4 @@
+require 'open3'
 
 module Healing
   
@@ -7,9 +8,16 @@ module Healing
     end
   
     def self.run_locally cmd, options={}
-      result  = `#{cmd}`
-      puts result unless result=='' || options[:quiet]
-      result
+      Open3.popen3(cmd) do |stdin, stdout, stderr|
+        out = stdout.read
+        err = stderr.read
+        unless options[:quiet]
+          puts out unless out=='' 
+          puts "stderr: #{err}" unless err==''
+        end
+        return out
+      end
+      #result  = `#{cmd}`
     end
   
     def load_ideal

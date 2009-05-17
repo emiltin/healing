@@ -23,9 +23,7 @@ module Healing
     end
   
     def heal
-      puts "Beginning to heal..."
       @cloud.heal
-      puts "Healing complete. Ahhh!"
     end
   
   end

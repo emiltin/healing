@@ -16,12 +16,7 @@ module Healing
       end 
       puts '' if msg   
     end 
-  end
-end
 
-
-class Array
-  
     def each_in_thread msg=nil, options={}, &block
       options = { :interval => 1, :dot => '.' }.merge(options)
       threads = []
@@ -39,5 +34,10 @@ class Array
       end
       puts '' if msg   
     end
-  
+
+  end
+end
+
+class Array
+  include Healing::Threading  
 end
