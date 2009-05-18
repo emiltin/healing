@@ -51,8 +51,9 @@ module Healing
     end
 
     def start
-      scan
-      if arm.any?
+      rescan
+      arm
+      if @armed.any?
         launch
         organize
         bootstrap
@@ -62,8 +63,8 @@ module Healing
 
     def arm
       @armed = []
-      arm_subcloud
-      @armed
+      @pruning = []
+      super
     end
 
     def launch
@@ -94,6 +95,7 @@ module Healing
     end
 
     def heal_remote
+      prune
       start
       @instances.each_in_thread "Healing #{@instances.size} instance(s)" do |i|
         i.execute "cd /healing && bin/heal-local"
@@ -103,6 +105,10 @@ module Healing
       
     def first_instances
       @instances.first
+    end
+    
+    def rescan
+      scan unless @instances.any?
     end
     
     def scan
@@ -116,7 +122,7 @@ module Healing
     end
     
     def show_instances
-      scan
+      rescan
       n = 20
       puts "#{'instance'.ljust(12)}\t#{'state'.ljust(n)}\t#{'cloud'.ljust(n)}\taddress" if @instances.any?
       @instances.each do |i|
@@ -129,6 +135,19 @@ module Healing
     
     def instances_in_cloud uuid
       @instances.find_all { |i| i.cloud_uuid==uuid.to_s }
+    end
+    
+    def prune
+      rescan
+      pruning = []
+      pruning = super
+      if pruning.any?
+        puts "Pruning #{pruning.size} instance(s)."
+        provider.terminate pruning
+        @instances -= pruning        
+      else
+  #      puts "No pruning needed."
+      end
     end
     
   end

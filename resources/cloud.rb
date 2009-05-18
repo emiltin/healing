@@ -25,19 +25,20 @@ module Healing
       Cloud.clouds << self 
     end
     
-    def arm_subcloud
+    def arm
       cur = root.instances.select { |i| i.cloud_uuid==@uuid }.size   
       n = @num_instances - cur
       n.times { root.armed << self } if n>0
-      @subclouds.each { |c| c.arm_subcloud } 
+      @subclouds.each { |c| c.arm } 
     end
-    
-    def num_instances_to_launch
-      cur = root.instances.select { |i| i.cloud_uuid==@cloud_uuid }.size   
-      n = @num_instances - cur
-      n = 0 if n<0
-      @subclouds.each { |c| n += c.num_instances_to_launch }
-      n 
+
+    def prune
+      pruning = []
+      cur = root.instances.select { |i| i.cloud_uuid==@uuid }   
+      n = cur.size - @num_instances
+      n.times { pruning << cur.shift } if n>0   #pick instances to terminate
+      @subclouds.each { |c| pruning.concat c.prune }
+      pruning
     end
     
     def validate
@@ -46,12 +47,6 @@ module Healing
 
     def root?
       false
-    end
-
-    def organize
-      num = num_instances_to_launch
-      if num>0
-      end
     end
     
     def describe options={}

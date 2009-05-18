@@ -28,6 +28,10 @@ module Healing
       @cloud.heal_remote
     end
 
+    def prune
+      @cloud.prune
+    end
+
     def scan
       @cloud.show_instances
     end

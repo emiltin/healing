@@ -1,0 +1,7 @@
+#!/usr/bin/env ruby
+
+require 'healing'
+require 'actors/initiator'
+
+h = Healing::Initiator.new
+h.prune

@@ -17,6 +17,10 @@ module Healing
     def revert
     end
     
+    def run cmd
+      Healing::Healer.run_locally cmd
+    end
+    
     def log msg
       @cloud.log msg
     end

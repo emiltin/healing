@@ -13,7 +13,7 @@ module Healing
     end
 
     def revert
-      log "removing package '#{@package}'"
+      log "removing package #{@package}"
       run "apt-get remove #{@package}"
     end
   end
