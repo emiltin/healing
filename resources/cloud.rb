@@ -26,22 +26,18 @@ module Healing
     end
     
     def arm_subcloud
-      cur = root.map.instances.select { |i| i.cloud_uuid==@uuid }.size   
+      cur = root.instances.select { |i| i.cloud_uuid==@uuid }.size   
       n = @num_instances - cur
       n.times { root.armed << self } if n>0
       @subclouds.each { |c| c.arm_subcloud } 
     end
     
     def num_instances_to_launch
-      cur = root.map.instances.select { |i| i.cloud_uuid==@cloud_uuid }.size   
+      cur = root.instances.select { |i| i.cloud_uuid==@cloud_uuid }.size   
       n = @num_instances - cur
       n = 0 if n<0
       @subclouds.each { |c| n += c.num_instances_to_launch }
       n 
-    end
-    
-    def instance
-      @map.instances
     end
     
     def validate
@@ -52,19 +48,6 @@ module Healing
       false
     end
 
-    def launch
-      ideal = num_instances
-      cur = root.map.select { |i| i.cloud_uuid == cloud_uuid }.size
-      instances = []
-      if ideal>cur
-        num = ideal - cur
-        puts "Launching #{num} instance(s) in cloud #{name}."
-        instances = launch_instances num
-      end
-      @subclouds.each { |c| instances << c.launch }    #traverse cloud hierachy
-      instances
-    end
-    
     def organize
       num = num_instances_to_launch
       if num>0

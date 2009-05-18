@@ -13,13 +13,17 @@ module Healing
     end
     
     def rebuild
-      puts_progress "Scanning cloud" do
+      puts_progress "Scanning cloud." do
         @instances = @cloud.root.provider.instances :key => @cloud.root.key_name, :state => :running
         @instances.each_in_thread do |i|
           i.cloud = @cloud
           i.fetch_cloud_uuid     #ssh to each instance and read the cloud_uuid file
         end
       end
+    end
+    
+    def add instances
+      @instances += instances
     end
     
     def show

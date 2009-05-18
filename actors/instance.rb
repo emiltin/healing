@@ -23,7 +23,9 @@ module Healing
     end
   
     def heal
+      puts "Healing initiated."
       @cloud.heal
+      puts "Done."
     end
   
   end

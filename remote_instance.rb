@@ -34,10 +34,12 @@ module Healing
       ssh_options = { :keys => [@cloud.root.key_path], :auth_methods => 'publickey', :paranoid => false }
       out = ''
       Net::SSH.start( address, 'root', ssh_options) do |ssh|  
+        log command, :cmd
         ssh.exec!(command) do |ch, stream, data|
           out << data
         end
       end
+      log out
       out
     end
     
@@ -51,6 +53,12 @@ module Healing
       #data[0] = [s,address].join(' ').rjust(width,' ')
       #data = data.flatten.join
       #data
+    end
+    
+    def log str, ch = :out
+      head = {:cmd => "[#{Time.now}] ", :err => "ERROR: " }
+      tail = {:cmd => "\n" }
+      ::File.open( "log/#{address}.log", 'a' ) { |f| f.write "#{head[ch]}#{str}#{tail[ch]}" }
     end
     
   end

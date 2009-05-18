@@ -52,34 +52,6 @@ module Healing
         instances
       end
 
-      def update instance_list
-        instance_ids = instance_list.map { |i| i.id }
-        updated_list = instances :instance_id => instance_ids
-        instance_list.each { |i| i.update_from updated_list.find { |u| u.id==i.id } }
-      end
-
-      def wait_for_addresses instances
-        todo = instances.dup  #.select { |i| i.state=='pending' || i.state=='running' }
-        puts_progress "Waiting for instances to acquire addresses" do
-          loop do
-            update todo
-            done = todo.select { |i| i.address && i.address!='' }
-            todo -= done
-            todo.any? ? sleep(1) : break
-          end
-        end
-      end
-
-      def wait_for_ping instances
-        instances.each_in_thread "Waiting for instances to respond", :dot => '.' do |i|
-          sleep 1 until ping_port i.address
-        end
-      end
-    
-      def ping_port host, port=22
-        return TCPSocket.new(host, port).is_a?(TCPSocket) rescue false
-      end
-
       def terminate instances
         return unless instances && instances.any?
         production = ['i-7287241b','i-54b51a3d','i-8cc04be5','i-b21181db','i-3f138356']   #safety

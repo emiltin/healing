@@ -4,7 +4,7 @@ module Healing
 
     def puts_progress msg=nil, options={}, &block
       options = { :interval => 1, :dot => '.' }.merge(options)
-      print msg if msg
+      print msg.ljust(30) if msg
       STDOUT.flush
       t = Thread.new(&block)
       STDOUT.flush
@@ -20,7 +20,7 @@ module Healing
     def each_in_thread msg=nil, options={}, &block
       options = { :interval => 1, :dot => '.' }.merge(options)
       threads = []
-      print msg if msg
+      print msg.ljust(30) if msg
       STDOUT.flush
       each { |item| threads << Thread.new(item,&block) }
       STDOUT.flush

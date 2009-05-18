@@ -16,10 +16,6 @@ module Healing
       @cloud.describe :recurse => true
     end
   
-    def start
-      @cloud.start
-    end
-
     def upload
       @cloud.install
     end
@@ -33,7 +29,7 @@ module Healing
     end
 
     def scan
-      @cloud.map.show
+      @cloud.show_instances
     end
     
   end
