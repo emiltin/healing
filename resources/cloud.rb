@@ -131,6 +131,14 @@ module Healing
         @cloud.resources << Healing::Dir.new(path, @cloud, options)
       end
 
+      def package name, options={}
+        @cloud.resources << Healing::Package.new(name, @cloud, options)
+      end
+
+      def rubygem name, options={}
+        @cloud.resources << Healing::Gem.new(name, @cloud, options)
+      end
+
       def recipe path
         instance_eval ::File.read("recipes/#{path}.rb")
       end

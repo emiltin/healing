@@ -14,16 +14,16 @@ module Healing
     def heal
       describe
       if @options[:source]
-        Healing::Healer.run_locally "cp #{@options[:source]} #{@path}"
+        run "cp #{@options[:source]} #{@path}"
       else
-        Healing::Healer.run_locally "echo '#{@options[:content]}' > #{@path}"
+        run "echo '#{@options[:content]}' > #{@path}"
       end  
-      Healing::Healer.run_locally "chmod '#{@options[:mode]}' #{@path}" if @options[:mode]
+      run "chmod '#{@options[:mode]}' #{@path}" if @options[:mode]
     end
     
     def revert
-      @cloud.log "reverting file '#{@path}'"
-      Healing::Healer.run_locally "rm #{@path}"
+      log "reverting file '#{@path}'"
+      run "rm #{@path}"
     end
  
     def describe options={}

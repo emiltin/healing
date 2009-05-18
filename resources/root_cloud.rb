@@ -80,10 +80,13 @@ module Healing
     end
 
     def bootstrap
+      @instances.each_in_thread "Uploading" do |instance|
+        instance.execute "apt-get update"
         #what is needed here? ex:
         #update os
         #install rubygems
         #install healing from repo
+      end
     end
 
     def install
@@ -95,7 +98,7 @@ module Healing
     end
 
     def heal_remote
-      prune
+ #     prune
       start
       @instances.each_in_thread "Healing #{@instances.size} instance(s)" do |i|
         i.execute "cd /healing && bin/heal-local"
