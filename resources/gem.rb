@@ -2,9 +2,9 @@ module Healing
   
   class Gem < Resource
   
-    def initialize gem, cloud, options={}
+    def initialize name, cloud, options={}
       super cloud, options
-      @gem = gem
+      @gem = name
     end
 
     def heal

@@ -139,6 +139,10 @@ module Healing
         @cloud.resources << Healing::Gem.new(name, @cloud, options)
       end
 
+      def execute name, command, options={}
+        @cloud.resources << Healing::Execute.new(name, command, @cloud, options)
+      end
+
       def recipe path
         instance_eval ::File.read("recipes/#{path}.rb")
       end

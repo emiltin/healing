@@ -55,8 +55,8 @@ module Healing
       arm
       if @armed.any?
         launch
-        organize
         bootstrap
+        organize
       end
       install
     end
@@ -70,6 +70,7 @@ module Healing
     def launch
       puts "Launching #{armed.size} instance(s)."
       @launched = provider.launch :num => armed.size, :key => key_name, :image => image
+      @launched.each { |i| i.cloud=self }
       @instances += @launched
     end
 
@@ -80,12 +81,20 @@ module Healing
     end
 
     def bootstrap
-      @instances.each_in_thread "Uploading" do |instance|
-        instance.execute "apt-get update"
-        #what is needed here? ex:
-        #update os
-        #install rubygems
-        #install healing from repo
+      #after launching an instance, ruby might not be installed, so we need to manually bootstrap a minimal environment
+      installer = "apt-get"   #should be determined from the os launched. how?
+      @instances.each_in_thread "Bootstrapping" do |i|
+        i.command "#{installer} update"
+        i.command "#{installer} install ruby -y"
+        
+        #these items could be installed by healing?
+        i.command "#{installer} install libreadline-ruby1.8 libruby1.8 ruby1.8-dev ruby1.8 rubygems -y"    #dev version is needed for building some gems, like passenger
+        i.command "echo 'export PATH=$PATH:/var/lib/gems/1.8/bin' >> /etc/profile"
+        i.command "mkdir /healing"
+        i.execute
+        #at this point we could upload healing and use it to install packages etc.
+  #      i.command "gem source --add http://gems.github.com"
+        #what else is needed?
       end
     end
 
@@ -134,10 +143,6 @@ module Healing
         puts "#{i.id.to_s.ljust(12)}\t#{i.state.to_s.ljust(n)}\t#{cloud_name.to_s.ljust(n)}\t#{i.address}"
       end
       puts 'No instances running.' if @instances.empty?
-    end
-    
-    def instances_in_cloud uuid
-      @instances.find_all { |i| i.cloud_uuid==uuid.to_s }
     end
     
     def prune
