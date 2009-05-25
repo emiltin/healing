@@ -2,18 +2,38 @@
 
 cloud :test do
   provider :ec2
-  image 'ami-bf5eb9d6'
   key '/Users/emiltin/.ec2/testpair'
-  uuid '23c3niyj34v'
+  
+  image 'ami-bf5eb9d6'
+  uuid 'nbxd3jjv33f'
   instances 1
   
+  volume 'vol-4943a020' => '/vol'   #this only makes sense if there is exactly one instance in this cloud
   
-  #a passenger recipe:
-  recipe 'passenger'
+  #recipe 'passenger'
+=begin  
+  package 'ruby1.8-dev'
+  package 'rubygems'
+  package 'xfsprogs'
+  package 'apache2-mpm-prefork'
+  package 'apache2-prefork-dev'
+  package 'libapr1-dev'
+  package 'mysql-server'
+  package 'imagemagick'
+  package 'libxml2'
+  package 'libxml2-dev'
+  package 'git-core'
 
-#  package 'mysql-server'
-#  package 'git-core'
-  #file '/etc/motd', :content => "Feeling good."
-  
+  rubygem 'rails'
+  rubygem 'passenger'
+  rubygem 'libxml-ruby'
+  rubygem 'uuidtools'
+  rubygem 'ar_mailer'
+  rubygem 'mysql'
+  rubygem 'aws-s3'
+  rubygem 'activemerchant'
+=end
+
+  file '/etc/motd', :content => "Feeling good."
 end
 

@@ -4,4 +4,4 @@ require 'healing'
 require 'app/admin'
 
 h = Healing::App::Admin.new
-h.heal
+h.volumes

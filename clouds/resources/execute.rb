@@ -1,6 +1,6 @@
 module Healing
   
-  class Execute < Resource
+  class Execute < Element
   
     def initialize name, command, cloud, options={}
       super cloud, options

@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 
 require 'healing'
-require 'actors/initiator'
+require 'app/admin'
 
-h = Healing::Initiator.new
+h = Healing::App::Admin.new
 h.terminate

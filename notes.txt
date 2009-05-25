@@ -73,3 +73,11 @@ todo: ruby rsync, to avoid ssh warnings in the terminal [update: not needed. sim
 coool.. getting clean runs when starting and healing clouds. works with subclouds too.
 todo: pruning clouds. bootstrapping. improved file locations and separate user files
 
+
+
+to attache amazon ebs volumes we need to use the ec2 api.
+should this be done by the provider? or is it a plugin of some kind?
+it's part of the provisioning, it can't just be done by running commands on the remote machine.
+maybe the provider extends the cloud lingo? for example the ec2 provider could add methods like ebs_volume
+
+en ebs volume can only be atteched to a single instance so 

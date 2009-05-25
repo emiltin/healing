@@ -1,6 +1,6 @@
 module Healing
   
-  class Package < Resource
+  class Package < Element
   
     def initialize package, cloud, options={}
       super cloud, options

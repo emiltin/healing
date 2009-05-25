@@ -1,7 +1,7 @@
 module Healing
-  class Cloud < Resource
+  class Cloud < Element
 
-    attr_accessor :resources, :uuid, :name, :depth, :subclouds, :num_instances, :root
+    attr_accessor :resources, :uuid, :name, :depth, :subclouds, :num_instances, :root, :volumes
 
     class << self
       attr_accessor :root
@@ -18,6 +18,7 @@ module Healing
       @parent = options[:parent]
       @name = options[:name]
       @resources = []
+      @volumes = {}
       @subclouds = []
       @depth = @parent ? @parent.depth+1 : 0
       Lingo.new(self).instance_eval &block
@@ -58,6 +59,7 @@ module Healing
     
     def describe_settings
       log "uuid: #{@uuid}"
+      log "volumes: #{@volumes.inspect}" if @volumes.size>0
     end
     
     def provider
@@ -98,60 +100,6 @@ module Healing
       @uuid
     end
 
-    class Lingo
-      def initialize cloud
-        @cloud = cloud
-      end
-
-      def instances number
-        @cloud.num_instances = number
-      end
-
-      def image i
-        @cloud.image = i
-      end
-
-      def provider p
-        @cloud.provider = Healing::Provider::Base.build p
-      end
-
-      def uuid u
-        @cloud.uuid = u.to_s
-      end
-
-      def cloud name, &block
-        @cloud.subclouds << Cloud.new( {:name=>name, :root => @cloud.root, :parent => @cloud}, &block)
-      end
-
-      def file path, options={}
-        @cloud.resources << Healing::File.new(path, @cloud, options)
-      end
-
-      def dir path, options={}
-        @cloud.resources << Healing::Dir.new(path, @cloud, options)
-      end
-
-      def package name, options={}
-        @cloud.resources << Healing::Package.new(name, @cloud, options)
-      end
-
-      def rubygem name, options={}
-        @cloud.resources << Healing::Gem.new(name, @cloud, options)
-      end
-
-      def execute name, command, options={}
-        @cloud.resources << Healing::Execute.new(name, command, @cloud, options)
-      end
-
-      def recipe path
-        instance_eval ::File.read("recipes/#{path}.rb")
-      end
-
-      def key path
-        @cloud.key = path
-      end
-    end
-
   end
 
 end
@@ -160,4 +108,8 @@ end
 
 def cloud name, &block
   Healing::RootCloud.new( {:name=>name}, &block )
+end
+
+def instance name, &block
+  Healing::RootCloud.new( {:name=>name, :instances => 1}, &block )
 end

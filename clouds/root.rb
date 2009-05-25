@@ -25,7 +25,8 @@ module Healing
     def describe_settings
       super
       log "key: #{key_path}"
-      log "instances: #{@num_instances}"
+      log "image: #{@image}"
+      log "instances: #{@num_instances}" if @num_instances
       log "provider: #{@provider.name}"
     end
 
@@ -46,11 +47,12 @@ module Healing
       if list.any?
         provider.terminate list
       else
-        puts "No instances running"
+        puts "No instances running."
       end
     end
 
-    def start
+    def resize
+      #     prune
       rescan
       arm
       if @armed.any?
@@ -73,7 +75,25 @@ module Healing
       @launched.each { |i| i.cloud=self }
       @instances += @launched
     end
-
+    
+    def arrange_volumes
+      # 1. make sure the right volumes are present
+      # 2. make sure the volumes are attachmed to the right instances      
+      detach_volumes
+      attach_volumes
+    end
+    
+    def detach_volumes
+      puts 'detach'
+    end
+    
+    def attach_volumes
+      puts 'attach'
+ #     @instances.each do |instance|
+  #      provider.attach_volume instance, @volumes 
+#      end
+    end
+    
     def organize
       unorganized = @launched.dup
       @armed.each_in_thread("Organizing") { |c| unorganized.shift.belong c }
@@ -99,18 +119,19 @@ module Healing
     end
 
     def install
+      rescan
       @instances.each_in_thread "Uploading" do |instance|
         #it seems ssh here doesn't work if we use ~ in the path?
-        Healing::Healer.run_locally "rsync -e 'ssh -i #{key_path} -o StrictHostKeyChecking=no' -ar /Users/emiltin/Desktop/healing/ root@#{instance.address}:/healing", :quiet => true
+        Healing::App::Base.run_locally "rsync -e 'ssh -i #{key_path} -o StrictHostKeyChecking=no' -ar /Users/emiltin/Desktop/healing/ root@#{instance.address}:/healing", :quiet => true
         #TODO how to handle ssh/rsync error messages?
       end
     end
 
     def heal_remote
- #     prune
-      start
+      resize
+      arrange_volumes
       @instances.each_in_thread "Healing #{@instances.size} instance(s)" do |i|
-        i.execute "cd /healing && bin/heal-local"
+        i.execute("cd /healing && bin/heal-local")
       end
       puts "Ahh!"
     end
@@ -135,14 +156,28 @@ module Healing
     
     def show_instances
       rescan
-      n = 20
-      puts "#{'instance'.ljust(12)}\t#{'state'.ljust(n)}\t#{'cloud'.ljust(n)}\taddress" if @instances.any?
+      puts_row ['instance','state','cloud','address'] if @instances.any?
       @instances.each do |i|
         c = Cloud.clouds.find { |c| c.uuid==i.cloud_uuid }
         cloud_name = c ? "#{' '*c.depth}#{c.name}" : '-'
-        puts "#{i.id.to_s.ljust(12)}\t#{i.state.to_s.ljust(n)}\t#{cloud_name.to_s.ljust(n)}\t#{i.address}"
+        puts_row [i.id,i.state,cloud_name,i.address]
       end
       puts 'No instances running.' if @instances.empty?
+    end
+    
+    def show_volumes
+      volumes = []
+      puts_progress("Scanning volumes") { volumes = provider.volumes }
+      if volumes.any? 
+        puts_row ['volume','status','attachment','instance','device'] 
+        volumes.each { |i| puts_row [i.id,i.status,i.attachment,i.instance_id,i.device] }
+      else
+        puts 'No instances running.'
+      end
+    end
+    
+    def puts_row items
+      puts items.map { |i| i.to_s.ljust(20) }.join("\t")
     end
     
     def prune

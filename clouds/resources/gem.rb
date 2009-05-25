@@ -1,6 +1,6 @@
 module Healing
   
-  class Gem < Resource
+  class Gem < Element
   
     def initialize name, cloud, options={}
       super cloud, options

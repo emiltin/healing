@@ -1,6 +1,6 @@
 module Healing
  
-  class File <  Resource
+  class File <  Element
   
     def initialize path, cloud, options={}
       super cloud, options

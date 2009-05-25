@@ -1,6 +1,6 @@
 module Healing
   
-   class Resource
+   class Element
   
     def initialize cloud, options={}     
       @cloud = cloud 
@@ -18,7 +18,7 @@ module Healing
     end
     
     def run cmd
-      Healing::Healer.run_locally cmd
+      Healing::App::Base.run_locally cmd
     end
     
     def log msg

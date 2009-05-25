@@ -1,6 +1,6 @@
 module Healing
   
-  class Dir <  Resource
+  class Dir <  Element
   
     def initialize path, cloud, options={}
       super cloud, options
