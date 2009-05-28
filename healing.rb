@@ -14,6 +14,7 @@ require 'remoters/base'
 require 'remoters/ec2'
 require 'remoters/instance'
 require 'remoters/volume'
+require 'remoters/map'
 require 'app/base'
 require 'app/worker'
 

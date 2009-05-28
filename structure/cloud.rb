@@ -28,15 +28,9 @@ module Healing
       end
       
       def my_instances
-        root.instances.select { |i| i.cloud_uuid==@uuid }
+        root.map.instances.select { |i| i.cloud_uuid==@uuid }
       end
       
-      def arm
-        cur = my_instances.size   
-        n = @num_instances - cur
-        n.times { root.armed << self } if n>0
-        @subclouds.each { |c| c.arm } 
-      end
 
       def prune
         pruning = []
@@ -116,6 +110,24 @@ module Healing
         volumes
       end
 
+      def balance
+        cur = my_instances.size   
+        balance = @num_instances - cur
+        @launching = balance>0 ? balance : nil
+        @pruning = balance<0 ? -balance : nil
+        @subclouds.each { |c| c.arm } 
+      end
+      
+      def launch
+        if @launching && @launching>0
+          puts "Launching #{@launching} instance(s)."
+          launched = remoter.launch :num => @launching, :key => root.key_name, :image => image, :cloud => self, :cloud_uuid => uuid
+          root.map.launched += launched
+          root.map.add_instances launched
+          @launching = nil
+        end
+        @subclouds.each { |c| c.launch }
+      end
 
     end
   end

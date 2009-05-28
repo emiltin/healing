@@ -26,9 +26,8 @@ module Healing
         @cloud_uuid = execute("cat #{CLOUD_UUID_PATH}").strip
       end
 
-      def belong cloud
-        @cloud = cloud
-        execute "echo '#{@cloud.uuid}' > #{CLOUD_UUID_PATH}"
+      def send_cloud_uuid
+        execute "echo '#{@cloud_uuid}' > #{CLOUD_UUID_PATH}"
       end
 
       def execute command=nil

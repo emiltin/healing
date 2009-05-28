@@ -56,8 +56,8 @@ module Healing
         response.instancesSet.item.each do |item|
           instances << Healing::Remoter::Instance.new( :id => item.instanceId, :key => item.keyName, :cloud_uuid => options[:cloud_uuid], :cloud => options[:cloud] )
         end
-        wait_for_addresses instances
-        wait_for_ping instances
+  #      wait_for_addresses instances
+  #      wait_for_ping instances
         instances
       end
 

@@ -111,4 +111,6 @@ could everything be done using a plugin mechanism that extends the cloud lingo? 
 
 ok new approach: keep both the clouds description (ideal) and a a map. the map contains list of instances and volumes - the 'hardware' of th system. it doesn't talk about clouds/groups of instances. 
 the map keeps track of which instances are running, to-be-launched, and to-be-terminated. it's used for comparing the current situation with the ideal, and noting what instances/volumes need to be launched, terminated, attached, etc.
- 
+
+
+launching all subclouds in a single ec2 call is not possible if they have differnt sizes or images, etc. so it might be simpler to simpler to let each subcloud make a call to launch, and then wait for all instance to become ready after that. that way the root clouds doesn't have to keep lists of instances etc, and we don't need the arming phase.
