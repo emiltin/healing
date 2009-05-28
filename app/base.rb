@@ -23,7 +23,7 @@ module Healing
       def load_ideal
         return if @cloud
         require 'ideal.rb'
-        @cloud = Healing::Cloud.root
+        @cloud = Healing::Structure::Cloud.root
         raise "No cloud defined in ideal.rb!" unless @cloud
       end
   

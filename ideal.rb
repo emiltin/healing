@@ -1,14 +1,15 @@
 #this is where we describe our cloud, so we can heal it
 
 cloud :test do
-  provider :ec2
+  remoter :ec2
   key '/Users/emiltin/.ec2/testpair'
   
   image 'ami-bf5eb9d6'
   uuid 'nbxd3jjv33f'
   instances 1
   
-  volume 'vol-4943a020' => '/vol'   #this only makes sense if there is exactly one instance in this cloud
+  volume 'vol-4943a020', :device => '/dev/sdh'   #this only makes sense if there is exactly one instance in this cloud
+ # volume 'vol-01698468' => '/vol'   #this only makes sense if there is exactly one instance in this cloud
   
   #recipe 'passenger'
 =begin  
@@ -35,5 +36,12 @@ cloud :test do
 =end
 
   file '/etc/motd', :content => "Feeling good."
+  
+  package 'xfsprogs'
+  
+  #these should only be executed once......
+  execute 'mount EBS volume', 'mkfs.xfs /dev/sdh'
+  execute 'mount EBS volume', 'echo "/dev/sdh /vol xfs noatime 0 0" >> /etc/fstab'
+  execute 'mount EBS volume', 'mkdir /vol && mount /vol'
 end
 

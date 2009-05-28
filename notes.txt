@@ -80,4 +80,35 @@ should this be done by the provider? or is it a plugin of some kind?
 it's part of the provisioning, it can't just be done by running commands on the remote machine.
 maybe the provider extends the cloud lingo? for example the ec2 provider could add methods like ebs_volume
 
-en ebs volume can only be atteched to a single instance so 
+an ebs volume can only be atteched to a single instance so 
+
+
+......
+
+hmm is there a confusion about descriptions of clouds and healing of clouds? is it right to mix the two things in the same object? on the other hand, it also seems complicated to have two clouds objects.
+
+clouds are organized in a hierachical structure, with clouds, sublcouds, resources (files, folderes, packages..) and services (mysql, haproxy...)
+
+it might be better do modify Structure::Instance and Remoter::Volume so they inherit from Structure::Base instead.
+that way everything can be unified in the same hierachical cloud tree, which can be used both for healing remotely and locally.
+hmm the problem with that is that a cloud describes the number of instances, but not each instance. when we scan a cloud and provisions etc we work with the individual instances.
+
+is a cloud with a single instance the same as the existing instance class?
+
+
+the basic issue is how we describe how we want the cloud to look like, and how it actually is, and then compare the two to know what needs to be done. is the ideal and the reality described using the same classes or two different classes?
+
+if we delete all subclouds from the ideal, there's still real instances running, and we need to deal with them even though they can't be contained neatly inside a cloud object.
+
+
+it seems good to describe the ideal state using objects of one class, and describe the real state using different classes.
+cloud - has no real counterpart
+instance - is a special type of cloud with one instance
+volume - 
+could everything be done using a plugin mechanism that extends the cloud lingo? remoters, volumes, resources... that would make the system very flexible and extendable.
+
+
+
+ok new approach: keep both the clouds description (ideal) and a a map. the map contains list of instances and volumes - the 'hardware' of th system. it doesn't talk about clouds/groups of instances. 
+the map keeps track of which instances are running, to-be-launched, and to-be-terminated. it's used for comparing the current situation with the ideal, and noting what instances/volumes need to be launched, terminated, attached, etc.
+ 
