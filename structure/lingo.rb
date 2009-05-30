@@ -3,54 +3,54 @@ module Healing
     class Cloud
 
       class Lingo
-        def initialize cloud
-          @cloud = cloud
+        def initialize parent
+          @parent = parent
         end
 
         def cloud name, &block
-          @cloud.subclouds << Cloud.new( {:name=>name, :root => @cloud.root, :parent => @cloud}, &block)
+          Cloud.new( @parent, {:name=>name, :root => @parent.root}, &block)
         end
 
         def instance name, &block
-          @cloud.subclouds << Cloud.new( {:name=>name, :root => @cloud.root, :parent => @cloud, :instance => 1}, &block)
+          Instance.new( @parent, {:name=>name, :root => @parent.root, :num_instances => 1}, &block)
         end
 
         def instances number
-          @cloud.num_instances = number
+          @parent.num_instances = number
         end
 
         def image i
-          @cloud.image = i
+          @parent.image = i
         end
 
         def remoter p
-          raise "You can only specify one remoter!" if @cloud.remoter
-          @cloud.remoter = Healing::Remoter::Base.build p
-          #    extend_lingo @cloud.remoter
+          raise "You can only specify one remoter!" if @parent.remoter
+          @parent.remoter = Healing::Remoter::Base.build p
+          #    extend_lingo @parent.remoter
         end
 
         def uuid u
-          @cloud.uuid = u.to_s
+          @parent.uuid = u.to_s
         end
 
         def file path, options={}
-          @cloud.resources << Healing::Structure::File.new(path, @cloud, options)
+          Healing::Structure::File.new(@parent, path, options)
         end
 
         def dir path, options={}
-          @cloud.resources << Healing::Structure::Dir.new(path, @cloud, options)
+          Healing::Structure::Dir.new(path, @parent, options)
         end
 
         def package name, options={}
-          @cloud.resources << Healing::Structure::Package.new(name, @cloud, options)
+          Healing::Structure::Package.new(@parent, name, options)
         end
 
         def rubygem name, options={}
-          @cloud.resources << Healing::Structure::Gem.new(name, @cloud, options)
+          Healing::Structure::Gem.new(name, @parent, options)
         end
 
         def execute name, command, options={}
-          @cloud.resources << Healing::Structure::Execute.new(name, command, @cloud, options)
+          Healing::Structure::Execute.new(name, command, @parent, options)
         end
 
         def recipe path
@@ -58,14 +58,11 @@ module Healing
         end
 
         def key path
-          @cloud.key = path
+          @parent.key = path
         end
 
         def volume id, options
-          raise "You cannot attach volumes to a cloud with more than one instance!" if @cloud.num_instances>1
-          h = { :volume_id => id }.merge(options)
-          @cloud.volumes << h
-#          @cloud.volumes << Healing::Remoter::Volume.new(:id => id, :device => options[:device])
+          Healing::Structure::Volume.new(@parent, id, options)
         end
 
         def extend_lingo guest

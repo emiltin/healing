@@ -18,7 +18,7 @@ module Healing
         @armed = {}
         @root.clouds.each do |c|
           cur = c.my_instances.size   
-          balance = c.num_instances - cur
+          balance = c.num_instances ? c.num_instances - cur : 0
           @armed[c] = balance if balance>0
         end
         return @armed.any?
@@ -67,7 +67,7 @@ module Healing
             raise "Can't attach volume to cloud without instances!" if instances.empty?
             raise "Can't attach volume to more that one instance!" if instances.size>1
             i = instances.first
-            cloud.volumes.each { |v| volumes << {:volume_id => v[:volume_id], :instance_id => i.id, :device => v[:device]} }
+            cloud.volumes.each { |v| volumes << {:volume_id => v.id, :instance_id => i.id, :device => v.device} }
           end
         end
         volumes

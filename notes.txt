@@ -114,3 +114,6 @@ the map keeps track of which instances are running, to-be-launched, and to-be-te
 
 
 launching all subclouds in a single ec2 call is not possible if they have differnt sizes or images, etc. so it might be simpler to simpler to let each subcloud make a call to launch, and then wait for all instance to become ready after that. that way the root clouds doesn't have to keep lists of instances etc, and we don't need the arming phase.
+
+added a provisioner class that handles resizing of clouds. it feels clean to have the resizing code in a separate class. instead of recursing into subclouds all the time, i maintain a list of all subclouds in the root, which also feels cleaner.
+only i'm not sure of is the bootstrapping. it might be better to move somewhere else, since it's more related to 'software' layer that the 'hardware' layer. bootstrapping might look different depending on the image, distro, etc. i think the provisioner should simply take care of stting up the right instances and volumes, so we're ready to install software and services.

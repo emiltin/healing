@@ -2,8 +2,8 @@ module Healing
   module Structure
     class Package < Base
   
-      def initialize package, cloud, options={}
-        super cloud, options
+      def initialize parent, package, options={}
+        super parent, options
         @package = package
       end
 

@@ -2,8 +2,8 @@ module Healing
   module Structure
     class File <  Base
   
-      def initialize path, cloud, options={}
-        super cloud, options
+      def initialize parent, path, options={}
+        super parent, options
         @path = path
       end
   

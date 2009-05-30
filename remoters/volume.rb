@@ -20,7 +20,7 @@ module Healing
       def detach
         @instance.cloud.remoter.detach_volume self, @instance
       end
-    
+      
     end
   end
 end

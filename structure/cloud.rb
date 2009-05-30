@@ -2,7 +2,7 @@ module Healing
   module Structure
     class Cloud < Base
 
-      attr_accessor :resources, :uuid, :name, :depth, :subclouds, :num_instances, :root, :volumes
+      attr_accessor :subclouds, :uuid, :name, :children, :num_instances, :root, :volumes
 
       class << self
         attr_accessor :root
@@ -13,15 +13,16 @@ module Healing
         @@clouds
       end
 
-      def initialize options, &block
+      def initialize parent, options, &block
         raise "Clouds must be created with a block!" unless block
+        @subclouds = []
+        super parent, options
+        @parent.subclouds << self if @parent
         @root = options[:root]
         @parent = options[:parent]
         @name = options[:name]
-        @resources = []
         @volumes = []
-        @subclouds = []
-        @depth = @parent ? @parent.depth+1 : 0
+        @num_instances = options[:num_instances]
         Lingo.new(self).instance_eval &block
         validate
         Cloud.clouds << self 
@@ -51,7 +52,7 @@ module Healing
       end
 
       def validate
-        raise "Cloud uuid not set in '#{name}'" unless @uuid
+        raise "Cloud uuid not set in '#{name}'" unless @uuid || !@num_instances
       end
 
       def root?
@@ -59,16 +60,15 @@ module Healing
       end
 
       def describe options={}
-        log "cloud: #{@name}", -1
+        log "cloud: #{@name}"
         describe_settings
-        @resources.each { |item| item.describe options }
-        @subclouds.each { |item| item.describe options } if options[:recurse]
+        super options
       end
 
       def describe_settings
-        log "uuid: #{@uuid}"
-        log "instances: #{@num_instances}" if @num_instances
-        log "volumes: #{@volumes.inspect}" if @volumes.any?
+        log "uuid: #{@uuid}", 1 if @uuid
+        log "instances: #{@num_instances}", 1 if @num_instances
+  #      log "volumes: #{@volumes.inspect}" if @volumes.any?
       end
 
       def remoter
@@ -98,11 +98,7 @@ module Healing
 
       def heal
         log "cloud: #{@name}", -1
-        @resources.each { |item| item.heal }
-      end
-
-      def log msg, level=0
-        puts '   '*(@depth+1+level) + msg
+        super
       end
 
       def get_uuid

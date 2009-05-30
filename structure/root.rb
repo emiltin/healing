@@ -10,7 +10,7 @@ module Healing
         raise "You can only define one root cloud!" if Cloud.root
         Cloud.root = self
         @clouds = []
-        super( {:name => options[:name], :root => self}, &block )
+        super( nil, {:name => options[:name], :root => self}, &block )
         validate
         @map = Remoter::Map.new self
       end  
@@ -25,9 +25,9 @@ module Healing
 
       def describe_settings
         super
-        log "key: #{key_path}"
-        log "image: #{@image}"
-        log "remoter: #{@remoter.name}"
+        log "key: #{key_path}", 1
+        log "image: #{@image}", 1
+        log "remoter: #{@remoter.name}", 1
       end
 
       def validate
