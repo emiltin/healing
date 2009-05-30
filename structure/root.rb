@@ -4,11 +4,12 @@ module Healing
 
       include Threading
 
-      attr_accessor :remoter, :image, :map, :armed
+      attr_accessor :remoter, :image, :map, :armed, :clouds
 
       def initialize options, &block
         raise "You can only define one root cloud!" if Cloud.root
         Cloud.root = self
+        @clouds = []
         super( {:name => options[:name], :root => self}, &block )
         validate
         @map = Remoter::Map.new self
@@ -50,41 +51,6 @@ module Healing
         end
       end
 
-      def resize
-        balance
-        launch
-        if map.launched.any?
-          remoter.wait_for_addresses map.launched
-          remoter.wait_for_ping map.launched
-          bootstrap
-          organize
-        end
-        install
-      end
-
-      def organize
-        map.launched.each_in_thread("Organizing") { |i| i.send_cloud_uuid }
-      end
-
-      def bootstrap
-        #after launching an instance, ruby might not be installed, so we need to manually bootstrap a minimal environment
-        installer = "apt-get"   #should be determined from the os launched. how?
-        map.launched.each_in_thread "Bootstrapping" do |i|
-          i.command "#{installer} update"
-#          i.command "#{installer} upgrade"
-          i.command "#{installer} install ruby -y"
-
-          #these items could be installed by healing?
-          i.command "#{installer} install libreadline-ruby1.8 libruby1.8 ruby1.8-dev ruby1.8 rubygems -y"    #dev version is needed for building some gems, like passenger
-          i.command "echo 'export PATH=$PATH:/var/lib/gems/1.8/bin' >> /etc/profile"
-          i.command "mkdir /healing"
-          i.execute
-          #at this point we could upload healing and use it to install packages etc.
-          #      i.command "gem source --add http://gems.github.com"
-          #what else is needed?
-        end
-      end
-
       def install
         map.instances.each_in_thread "Uploading" do |instance|
           #it seems ssh here doesn't work if we use ~ in the path?
@@ -94,8 +60,8 @@ module Healing
       end
             
       def heal_remote
-        resize
-        arrange_volumes
+        Provisioner.new(self).heal
+        install
         map.instances.each_in_thread "Healing #{map.instances.size} instance(s)" do |i|
           i.execute("cd /healing && bin/heal-local")
         end
@@ -134,14 +100,10 @@ module Healing
         if pruning.any?
           puts "Pruning #{pruning.size} instance(s)."
           remoter.terminate pruning
-          map.instances -= pruning        
+          map.remove_instances -= pruning        
         else
           #      puts "No pruning needed."
         end
-      end
-
-      def arrange_volumes
-        remoter.arrange_volumes volumes_hash
       end
 
     end

@@ -12,6 +12,7 @@ module Healing
         @cloud_uuid = info[:cloud_uuid]
         @state = info[:state]
         @cloud = info[:cloud]
+        @root = info[:root] || (@cloud ? @cloud.root : nil)
         @commands = []
       end
 
@@ -29,11 +30,17 @@ module Healing
       def send_cloud_uuid
         execute "echo '#{@cloud_uuid}' > #{CLOUD_UUID_PATH}"
       end
-
+      
+      def place root
+        @root = root
+        fetch_cloud_uuid
+        @cloud = @root.find_cloud @cloud_uuid
+       end
+        
       def execute command=nil
         @commands << command if command
         @commands.flatten!
-        ssh_options = { :keys => [@cloud.root.key_path], :auth_methods => 'publickey', :paranoid => false }
+        ssh_options = { :keys => [@root.key_path], :auth_methods => 'publickey', :paranoid => false }
         out = ''
         Net::SSH.start( address, 'root', ssh_options) do |ssh|  
           while command = @commands.shift do
@@ -64,7 +71,7 @@ module Healing
       end
 
       def log str, ch = :out
-        head = {:cmd => "[#{Time.now}] ", :err => "ERROR: " }
+        head = {:cmd => ">> [#{Time.now}] ", :err => "ERROR: " }
         tail = {:cmd => "\n" }
         ::File.open( "log/#{address}.log", 'a' ) { |f| f.write "#{head[ch]}#{str}#{tail[ch]}" }
       end

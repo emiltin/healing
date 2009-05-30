@@ -41,9 +41,8 @@ module Healing
           cur.find { |c| c.id==i[:volume_id] && c.instance_id==i[:instance_id] } != nil
         end
         if list.any?
-          puts_progress("Attaching #{list.size} volume(s)") do
-            list.each { |options| attach_volume options }
-          end
+          puts "Attaching #{list.size} volume(s)."
+          list.each { |options| attach_volume options }
         end
       end
 

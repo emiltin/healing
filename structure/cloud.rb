@@ -25,12 +25,21 @@ module Healing
         Lingo.new(self).instance_eval &block
         validate
         Cloud.clouds << self 
+        @root.clouds << self
       end
       
       def my_instances
         root.map.instances.select { |i| i.cloud_uuid==@uuid }
       end
       
+      def find_cloud cloud_uuid
+        return self if cloud_uuid==@uuid
+        @subclouds.each do |c| 
+          r = c.find_cloud cloud_uuid
+          return r if r
+        end
+        nil
+      end
 
       def prune
         pruning = []
@@ -99,35 +108,6 @@ module Healing
       def get_uuid
         @uuid
       end
-                  
-      def volumes_hash
-        #TODO this method is ugly
-        volumes = []
-        my_instances.each do |instance|
-          @volumes.each { |v| volumes << {:volume_id => v[:volume_id], :instance_id => instance.id, :device => v[:device]} }
-        end
-        @subclouds.each { |c| volumes.concat c.list_volumes } 
-        volumes
-      end
-
-      def balance
-        cur = my_instances.size   
-        balance = @num_instances - cur
-        @launching = balance>0 ? balance : nil
-        @pruning = balance<0 ? -balance : nil
-        @subclouds.each { |c| c.arm } 
-      end
-      
-      def launch
-        if @launching && @launching>0
-          puts "Launching #{@launching} instance(s)."
-          launched = remoter.launch :num => @launching, :key => root.key_name, :image => image, :cloud => self, :cloud_uuid => uuid
-          root.map.launched += launched
-          root.map.add_instances launched
-          @launching = nil
-        end
-        @subclouds.each { |c| c.launch }
-      end
 
     end
   end
@@ -138,3 +118,4 @@ end
 def cloud name, &block
   Healing::Structure::Root.new( {:name=>name}, &block )
 end
+
