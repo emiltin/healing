@@ -60,7 +60,7 @@ module Healing
       end
             
       def heal_remote
-        Provisioner.new(self).heal
+        App::Provisioner.new(self).heal
         install
         map.instances.each_in_thread "Healing #{map.instances.size} instance(s)" do |i|
           i.execute("cd /healing && bin/heal-local")

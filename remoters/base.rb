@@ -65,7 +65,7 @@ module Healing
       end
 
       def wait_for_ping instances
-        instances.each_in_thread "Waiting for responses", :dot => '.' do |i|
+        instances.each_in_thread "Waiting for responses" do |i|
           sleep 1 until ping_port i.address
         end
       end

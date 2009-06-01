@@ -11,8 +11,8 @@ module Healing
         @device = options[:device]
         has do
           package 'xfsprogs'
-          execute 'mount EBS volume', 'mkfs.xfs /dev/sdh'
-          execute 'mount EBS volume', 'echo "/dev/sdh /vol xfs noatime 0 0" >> /etc/fstab'
+          execute 'add device', 'mkfs.xfs /dev/sdh'
+          execute 'add volume to filetab', 'echo "/dev/sdh /vol xfs noatime 0 0" >> /etc/fstab'
           execute 'mount EBS volume', 'mkdir /vol && mount /vol'
         end
       end

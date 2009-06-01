@@ -42,7 +42,7 @@ module Healing
         return if @fresh
         puts_progress "Scanning" do
           @instances = @root.remoter.instances :key => @root.key_name, :state => :running
-          @instances.each_in_thread(nil, :dot => nil) { |i| i.place @root }
+          @instances.each_in_thread { |i| i.place @root }
         end
         @fresh = true
       end
