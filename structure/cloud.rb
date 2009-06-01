@@ -59,16 +59,13 @@ module Healing
         false
       end
 
-      def describe options={}
+      def describe_name
         log "cloud: #{@name}"
-        describe_settings
-        super options
       end
 
       def describe_settings
-        log "uuid: #{@uuid}", 1 if @uuid
-        log "instances: #{@num_instances}", 1 if @num_instances
-  #      log "volumes: #{@volumes.inspect}" if @volumes.any?
+        log_setting "uuid: #{@uuid}" if @uuid
+        log_setting "instances: #{@num_instances}" if @num_instances
       end
 
       def remoter
@@ -97,7 +94,7 @@ module Healing
       end
 
       def heal
-        log "cloud: #{@name}", -1
+        describe_name
         super
       end
 

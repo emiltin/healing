@@ -9,11 +9,9 @@ cloud :app do
     uuid '5jo5ncnck223x'
     instances 2
     file '/etc/motd', :content => "Feeling good."
+    recipe 'passenger'
   end
-  
- # volume 'vol-01698468' => '/vol'   #this only makes sense if there is exactly one instance in this cloud
-  
-  #recipe 'passenger'
+    
 =begin  
   package 'ruby1.8-dev'
   package 'rubygems'
@@ -43,8 +41,8 @@ cloud :app do
       volume 'vol-4943a020', :device => '/dev/sdh'   #this only makes sense if there is exactly one instance in this cloud
     end
     instance :slave do
-      volume 'vol-01698468', :device => '/dev/sdh'   #this only makes sense if there is exactly one instance in this cloud
       uuid '4jbvj3jd'
+      volume 'vol-01698468', :device => '/dev/sdh'   #this only makes sense if there is exactly one instance in this cloud
     end
   end
 end

@@ -8,7 +8,7 @@ module Healing
       end
 
       def heal
-        describe
+        describe_name
         run "apt-get install -y #{@package} "
       end
 
@@ -17,7 +17,7 @@ module Healing
         run "apt-get remove -y #{@package}"
       end
 
-      def describe options={}
+      def describe_name
         log "package: #{@package}"
       end
 

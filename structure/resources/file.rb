@@ -12,7 +12,7 @@ module Healing
       end
   
       def heal
-        describe
+        describe_name
         if @options[:source]
           run "cp #{@options[:source]} #{@path}"
         else
@@ -26,17 +26,16 @@ module Healing
         run "rm #{@path}"
       end
  
-      def describe options={}
-        c = content_summary
-        c = " = '#{c}'" if c
-        log "file: #{@path}#{c}"
+      def describe_name
+        log "file: #{@path}"
       end
     
-      def content_summary
+      def describe_settings
         if @options[:content]
           s = @options[:content].strip.split("\n")[0]
           max = 50
-          return s.size > max ? "#{s[0..max]}..." : s
+          str =  s.size > max ? "#{s[0..max]}..." : s
+          log_setting "content: '#{str}'" if str
         end
       end
     

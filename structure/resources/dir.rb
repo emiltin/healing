@@ -12,7 +12,7 @@ module Healing
       end
 
       def heal
-        describe
+        describe_name
         if @options[:source]
           Healing::Healer.run_locally "cp -R #{@options[:source]} #{@path}"
         else
@@ -26,7 +26,7 @@ module Healing
         #      run "rm -rf #{@path}"
       end
 
-      def describe options={}
+      def describe_name
         log "dir: #{@path}"
       end
 

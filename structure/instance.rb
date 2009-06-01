@@ -2,12 +2,10 @@ module Healing
   module Structure
     class Instance < Cloud
 
-
-      def heal
+      def describe_name
         log "instance: #{@name}"
-        @children.each { |item| item.heal }
       end
-
+      
     end
   end
 end

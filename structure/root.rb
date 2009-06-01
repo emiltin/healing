@@ -25,9 +25,9 @@ module Healing
 
       def describe_settings
         super
-        log "key: #{key_path}", 1
-        log "image: #{@image}", 1
-        log "remoter: #{@remoter.name}", 1
+        log_setting "key: #{key_path}"
+        log_setting "image: #{@image}"
+        log_setting "remoter: #{@remoter.name}"
       end
 
       def validate

@@ -8,7 +8,7 @@ module Healing
       end
 
       def heal
-        describe
+        describe_name
         run "gem install --no-rdoc --no-ri #{@gem} "
       end
 
@@ -17,7 +17,7 @@ module Healing
         run "gem uninstall #{@gem}"
       end
 
-      def describe options={}
+      def describe_name
         log "gem: #{@gem}"
       end
 

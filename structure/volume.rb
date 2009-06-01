@@ -24,12 +24,18 @@ module Healing
       def revert
       end
  
-      def describe options={}
+      def describe_name
         log "volume: #{@id}"
-        log "device: #{@device}", 1
-        super options
+      end
+
+      def describe_settings
+        log_setting "device: #{@device}"
       end
     
+      def describe_children options={}
+        #silent
+      end
+
     end
   end
 end

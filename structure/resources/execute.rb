@@ -9,11 +9,11 @@ module Healing
       end
 
       def heal
-        describe
+        describe_name
         run @command
       end
     
-      def describe options={}
+      def describe_name
         log "execute: #{@name}"
       end
 

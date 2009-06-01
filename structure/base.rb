@@ -27,16 +27,36 @@ module Healing
         Healing::App::Base.run_locally cmd
       end
 
-      def log msg, level=0
-        puts '   '*(@depth+level) + msg
+      def log str, level=0
+        puts '   '*(@depth+level) + str
+      end
+      
+      def log_name str
+        log msg
+      end
+
+      def log_setting str
+        log str, 1
       end
       
       def has &block
         Cloud::Lingo.new(self).instance_eval &block
       end
       
-      def describe options
-        @children.each { |item| item.describe options } if options[:recurse]
+      def describe options={}
+        describe_name
+        describe_settings
+        describe_children options if options[:recurse]
+      end
+
+      def describe_name
+      end
+
+      def describe_settings
+      end
+
+      def describe_children options={}
+        @children.each { |item| item.describe options }
       end
       
     end
