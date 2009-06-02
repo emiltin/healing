@@ -3,6 +3,7 @@ Dir.glob('utilities/*.rb') { |file| require file }
 
 require 'structure/base.rb'
 require 'structure/resources/file'
+require 'structure/resources/line_in_file'
 require 'structure/resources/dir'
 require 'structure/resources/package'
 require 'structure/resources/gem'

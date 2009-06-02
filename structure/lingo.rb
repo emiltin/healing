@@ -6,7 +6,7 @@ module Healing
         def initialize parent
           @parent = parent
         end
-
+        
         def cloud name, &block
           Cloud.new( @parent, {:name=>name, :root => @parent.root}, &block)
         end
@@ -37,6 +37,10 @@ module Healing
           Healing::Structure::File.new(@parent, path, options)
         end
 
+        def line_in_file path, options={}
+          Healing::Structure::LineInFile.new(@parent, path, options)
+        end
+
         def dir path, options={}
           Healing::Structure::Dir.new(path, @parent, options)
         end
@@ -49,8 +53,8 @@ module Healing
           Healing::Structure::Gem.new(name, @parent, options)
         end
 
-        def execute name, command, options={}
-          Healing::Structure::Execute.new(name, command, @parent, options)
+        def execute name, command, options={}, &block
+          Healing::Structure::Execute.new(name, command, @parent, options, &block)
         end
 
         def recipe path
