@@ -26,7 +26,7 @@ module Healing
         @cloud = Healing::Structure::Cloud.root
         raise "No cloud defined in ideal.rb!" unless @cloud
       end
-  
+      
     end
   end
   

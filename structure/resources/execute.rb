@@ -1,23 +1,25 @@
 module Healing
   module Structure
     class Execute < Base
-  
-      def initialize name, command, cloud, options={}, &block
-        super cloud, options
-        @name = name
-        @command = command
-        @block = block
+ 
+      def initialize parent, name,command, options={}
+        super parent, options.merge(:name=>name, :command => command)
       end
 
       def heal
         describe_name
-        run @command if @command
-        self.instance_eval &@block if @block
+        run command
+  #      self.instance_eval &@block if @block
       end
     
       def describe_name
-        log "execute: #{@name}"
+        puts_title :execute, "#{name}: #{command}"
       end
+      
+      def describe_settings
+#        puts_setting :block if block.to_s
+      end
+
 
     end
   end

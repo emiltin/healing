@@ -2,7 +2,50 @@ module Healing
   module Structure
     class Cloud < Base
 
-      attr_accessor :subclouds, :uuid, :name, :children, :num_instances, :root, :volumes
+      class Lingo < Base::Lingo
+        def cloud name, &block
+          Cloud.new( @parent, {:name=>name, :root => @parent.root}, &block)
+        end
+
+        def remoter p
+          raise "You can only specify one remoter!" if @parent.remoter
+          @parent.remoter = Healing::Remoter::Base.build p
+        end
+
+        def image i
+          @parent.image = i
+        end
+
+        def key path
+          @parent.key = path
+        end
+
+
+        def uuid u
+          @parent.uuid = u.to_s
+        end
+
+
+        def instance name, &block
+          Instance.new( @parent, {:name=>name, :root => @parent.root, :num_instances => 1}, &block)
+        end
+
+        def instances number
+          @parent.num_instances = number
+        end
+
+        def recipe path
+          instance_eval ::File.read("recipes/#{path}.rb")
+        end
+
+        def method_missing(sym, *args, &block)
+          eval("Healing::Structure::#{sym.to_s.camelcase}").new @parent, *args, &block
+        end
+
+      end
+
+
+      attr_accessor :subclouds, :volumes, :clouds
 
       class << self
         attr_accessor :root
@@ -14,27 +57,21 @@ module Healing
       end
 
       def initialize parent, options, &block
-        raise "Clouds must be created with a block!" unless block
         @subclouds = []
-        super parent, options
-        @parent.subclouds << self if @parent
-        @root = options[:root]
-        @parent = options[:parent]
-        @name = options[:name]
         @volumes = []
-        @num_instances = options[:num_instances]
-        Lingo.new(self).instance_eval &block
-        validate
+        super parent, options
+        raise "Clouds must be created with a block!" unless block
+        @parent.subclouds << self if @parent
+        root.clouds << self
         Cloud.clouds << self 
-        @root.clouds << self
       end
-      
+
       def my_instances
-        root.map.instances.select { |i| i.cloud_uuid==@uuid }
+        root.map.instances.select { |i| i.cloud_uuid==uuid }
       end
-      
+
       def find_cloud cloud_uuid
-        return self if cloud_uuid==@uuid
+        return self if cloud_uuid==uuid
         @subclouds.each do |c| 
           r = c.find_cloud cloud_uuid
           return r if r
@@ -45,27 +82,18 @@ module Healing
       def prune
         pruning = []
         cur = my_instances
-        n = cur.size - @num_instances
+        n = cur.size - num_instances
         n.times { pruning << cur.shift } if n>0   #pick instances to terminate
         @subclouds.each { |c| pruning.concat c.prune }
         pruning
       end
 
       def validate
-        raise "Cloud uuid not set in '#{name}'" unless @uuid || !@num_instances
+        raise "Cloud uuid not set in '#{name}'" unless uuid || !num_instances
       end
 
       def root?
         false
-      end
-
-      def describe_name
-        log "cloud: #{@name}"
-      end
-
-      def describe_settings
-        log_setting "uuid: #{@uuid}" if @uuid
-        log_setting "instances: #{@num_instances}" if @num_instances
       end
 
       def remoter
@@ -99,7 +127,16 @@ module Healing
       end
 
       def get_uuid
-        @uuid
+        uuid
+      end
+
+      def describe_name
+        puts_title :cloud, name
+      end
+      
+      def describe_settings
+        puts_setting :uuid, uuid if uuid
+        puts_setting :instances, num_instances if num_instances
       end
 
     end

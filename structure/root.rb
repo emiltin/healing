@@ -11,7 +11,6 @@ module Healing
         Cloud.root = self
         @clouds = []
         super( nil, {:name => options[:name], :root => self}, &block )
-        validate
         @map = Remoter::Map.new self
       end  
 
@@ -25,9 +24,9 @@ module Healing
 
       def describe_settings
         super
-        log_setting "key: #{key_path}"
-        log_setting "image: #{@image}"
-        log_setting "remoter: #{@remoter.name}"
+        puts_setting :key, key_path
+        puts_setting :image, @image
+        puts_setting :remoter, @remoter.name
       end
 
       def validate

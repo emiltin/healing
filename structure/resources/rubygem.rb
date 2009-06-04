@@ -1,23 +1,23 @@
 module Healing
   module Structure
-    class Package < Base
-  
+    class Rubygem < Base
+
       def initialize parent, name, options={}
         super parent, options.merge(:name => name)
       end
 
       def heal
         describe_name
-        run "apt-get install -y #{name} "
+        run "gem install --no-rdoc --no-ri #{name} "
       end
 
       def revert
-        log "removing package #{name}"
-        run "apt-get remove -y #{name}"
+        log "removing gem #{name}"
+        run "gem uninstall #{name}"
       end
 
       def describe_name
-        puts_title :package, name
+        puts_title :gem, name
       end
 
     end

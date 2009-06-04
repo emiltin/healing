@@ -2,9 +2,8 @@ module Healing
   module Structure
     class Dir <  Base
 
-      def initialize path, cloud, options={}
-        super cloud, options
-        @path = path
+      def initialize parent, path, options={}
+        super parent, options.merge(:path => path)
       end
 
       def defaults
@@ -13,22 +12,27 @@ module Healing
 
       def heal
         describe_name
-        if @options[:source]
-          Healing::Healer.run_locally "cp -R #{@options[:source]} #{@path}"
+        if source
+          run "cp -R #{source} #{path}"
         else
-          Healing::Healer.run_locally "mkdir -p #{@path}"
+          run "mkdir -p #{path}"
         end  
-        Healing::Healer.run_locally "chmod '#{@options[:mode]}' #{@path}" if @options[:mode]
+        run "chmod '#{mode}' #{path}" if mode
       end
 
       def revert
-        @cloud.log "reverting dir '#{@path}'"
-        #      run "rm -rf #{@path}"
+        @cloud.log "reverting dir '#{path}'"
+        #      run "rm -rf #{path}"
+      end
+      
+      def describe_name
+        puts_title :dir, path
+      end
+      
+      def describe_settings
+        puts_setting :mode if mode
       end
 
-      def describe_name
-        log "dir: #{@path}"
-      end
 
     end
   end

@@ -1,14 +1,10 @@
 module Healing
   module Structure
     class Volume <  Base
-  
-      attr_accessor :id, :device
       
-      def initialize parent, id, options={}
-        super parent, options
+      def initialize parent, vol_id, options={:device => '/dev/sdh'}
+        super parent, options.merge(:vol_id=>vol_id)
         @parent.volumes << self
-        @id = id
-        @device = options[:device]
         has do
           package 'xfsprogs'
           execute 'add device', 'mkfs.xfs /dev/sdh'
@@ -17,23 +13,16 @@ module Healing
         end
       end
    
-      def heal
-        super
-      end
-    
-      def revert
-      end
- 
       def describe_name
-        log "volume: #{@id}"
+        puts_title :volume, vol_id
       end
-
+      
       def describe_settings
-        log_setting "device: #{@device}"
+        puts_setting :device
       end
     
       def describe_children options={}
-        #silent
+        super   #or silent
       end
 
     end

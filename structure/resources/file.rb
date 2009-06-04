@@ -3,8 +3,7 @@ module Healing
     class File <  Base
   
       def initialize parent, path, options={}
-        super parent, options
-        @path = path
+        super parent, options.merge(:path => path)
       end
   
       def defaults
@@ -14,29 +13,25 @@ module Healing
       def heal
         describe_name
         if @options[:source]
-          run "cp #{@options[:source]} #{@path}"
+          run "cp #{source} #{path}"
         else
-          run "echo '#{@options[:content]}' > #{@path}"
+          run "echo '#{content}' > #{path}"
         end  
-        run "chmod '#{@options[:mode]}' #{@path}" if @options[:mode]
+        run "chmod '#{mode}' #{path}" if @options[:mode]
       end
     
       def revert
-        log "reverting file '#{@path}'"
-        run "rm #{@path}"
+        log "reverting file '#{path}'"
+        run "rm #{path}"
       end
  
       def describe_name
-        log "file: #{@path}"
+        puts_title :file, path
       end
-    
+      
       def describe_settings
-        if @options[:content]
-          s = @options[:content].strip.split("\n")[0]
-          max = 50
-          str =  s.size > max ? "#{s[0..max]}..." : s
-          log_setting "content: '#{str}'" if str
-        end
+        puts_setting :content if content
+        puts_setting :mode if mode
       end
     
     end
