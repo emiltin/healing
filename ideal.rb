@@ -17,6 +17,19 @@ cloud :app do
   line_in_file '/etc/motd', :content => "Welcome to your #{@parent.name}/#{@parent.uuid} cloud!"
 
   service 'mysql'
+
+=begin  
+  state :running do
+    service :mysql => :on
+    site :app => :on
+  end
+
+  state :offline do
+    site :app => :off
+    service :mysql => :off
+  end
+=end 
+  
 end
 
 
