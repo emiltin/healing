@@ -39,6 +39,10 @@ module Healing
         end
 
         def method_missing(sym, *args, &block)
+          if match = sym.to_s.match(/^not_(.+)/)
+            p "NOT"
+            sym = match[1]
+          end
           eval("Healing::Structure::#{sym.to_s.camelcase}").new @parent, *args, &block
         end
 

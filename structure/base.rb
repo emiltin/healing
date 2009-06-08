@@ -16,8 +16,12 @@ module Healing
         @parent.children << self if parent
         @options = defaults.merge(options)
         @depth = @parent ? @parent.depth+1 : 0
-        eval("#{self.class.name}::Lingo").new(self).instance_eval &block if block
+        eval_block &block
         validate
+      end
+      
+      def eval_block &block
+        eval("#{self.class.name}::Lingo").new(self).instance_eval &block if block
       end
       
       def defaults

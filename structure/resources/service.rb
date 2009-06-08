@@ -26,10 +26,13 @@ module Healing
       
       def heal
         describe_name
-        if state == :on
-          start
-        else
-          stop
+        case state
+          when :on
+            start
+          when :restart
+            restart
+          when :off
+            stop
         end
       end
       
@@ -43,10 +46,11 @@ module Healing
       end
       
       def restart
+        run "/etc/init.d/#{name} restart"
       end
       
       def describe_name
-        puts_title :service, name
+        puts_title :service, "#{name}: #{state}"
       end
 
       def describe_settings

@@ -12,12 +12,16 @@ module Healing
   
       def heal
         describe_name
-        if @options[:source]
-          run "cp #{source} #{path}"
+        if remove?
+          run "rm #{path}"
         else
-          run "echo '#{content}' > #{path}"
-        end  
-        run "chmod '#{mode}' #{path}" if @options[:mode]
+          if @options[:source]
+            run "cp #{source} #{path}"
+          else
+            run "echo '#{content}' > #{path}"
+          end  
+          run "chmod '#{mode}' #{path}" if @options[:mode]
+        end
       end
     
       def revert
@@ -30,6 +34,7 @@ module Healing
       end
       
       def describe_settings
+        puts_setting :remove if remove?
         puts_setting :content if content
         puts_setting :mode if mode
       end

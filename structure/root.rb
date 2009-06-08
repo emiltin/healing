@@ -5,7 +5,7 @@ module Healing
       include Threading
 
       attr_accessor :remoter, :image, :map, :armed, :clouds
-
+      
       def initialize options, &block
         raise "You can only define one root cloud!" if Cloud.root
         Cloud.root = self
