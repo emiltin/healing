@@ -1,6 +1,6 @@
 module Healing
   module Structure
-    class Package < Base
+    class Package < Resource
   
       def initialize parent, name, options={}
         super parent, options.merge(:name => name)

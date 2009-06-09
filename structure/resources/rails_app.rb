@@ -5,12 +5,13 @@ module Healing
       def initialize parent, name, options
         super parent, options.merge(:name => name)
         
-        p 'xxxxxxxx'
-        p @parent
-        p parent_cloud
+        #before() is evaluated by the parent cloud, so we can't use our own intance methods. so copy to locals
+        #FIXME this kinda sucks
         the_name = name
         the_repo = repo
-        before do
+        the_env = env
+        
+        parent.before do
           recipe 'passenger'
           git_repo "/#{the_name}", :url => the_repo, :user => 'www-data', :group => 'www-data'
 

@@ -147,20 +147,12 @@ file '/bla', :content => 'sarah'			#issue a warning? disallow?
 
 we have a tree of structure elements.... but in the end, it's 'collapsed' into the actual stuff thats installed in each instances. 
 
-this makes me realize that there's a problem with the way different clouds are healed - stuff in parent clouds are currently not installed in sub clouds. for example:
-
-cloud :app do
-  remoter :ec2
-  key '/Users/emiltin/.ec2/testpair'
-  uuid 'gi48gjdj33'
-  image 'ami-bf5eb9d6'
-  file '/etc/motd', :content => 'Hi!'
-  cloud :db do
-    uuid '4jjkkjwr3jk22'
-    instances 1
-  end
-end
-
-this should install the file in the db subcloud, but doesn't currently.
-
+this makes me realize that there's a problem with the way different clouds are healed - stuff in parent clouds are currently not installed in sub clouds.
 ok, now super clouds are applied to instances as well. (but of course not sibling clouds)
+
+need to handle different images for different clouds..
+
+
+both gems and services should automatically include any needed packages.
+
+it might be useful to create two subclasses from structure::base - leaf and branch. only branches would have @resources etc.

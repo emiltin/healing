@@ -1,6 +1,6 @@
 module Healing
   module Structure
-    class Execute < Base
+    class Execute < Resource
  
       def initialize parent, name,command, options={}
         super parent, options.merge(:name=>name, :command => command)

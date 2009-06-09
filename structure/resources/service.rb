@@ -1,8 +1,8 @@
 module Healing
   module Structure
-    class Service < Base
+    class Service < Resource
 
-      class Lingo < Base::Lingo
+      class Lingo < Resource::Lingo
         def on
           @parent.state = :on
         end
@@ -50,12 +50,10 @@ module Healing
       end
       
       def describe_name
-        puts_title :service, "#{name}: #{state}"
+        puts_title :service, "#{name} (#{state})"
       end
 
       def describe_settings
-        puts_setting :boom if boom
-        puts_setting :state
       end
 
     end

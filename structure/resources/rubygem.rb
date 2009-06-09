@@ -1,6 +1,6 @@
 module Healing
   module Structure
-    class Rubygem < Base
+    class Rubygem < Resource
 
       def initialize parent, name, options={}
         super parent, options.merge(:name => name)

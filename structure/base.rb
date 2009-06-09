@@ -24,7 +24,7 @@ module Healing
       end
 
       def before &block
-        eval("#{parent_cloud.class.name}::Lingo").new(self).instance_eval &block
+        eval("#{parent.class.name}::Lingo").new(self).instance_eval &block
       end
 
       def cloud_path
