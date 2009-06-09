@@ -4,6 +4,7 @@ module Healing
   
       def initialize parent, name, options={}
         super parent, options.merge(:name => name)
+     #   parent_cloud.packages << self
       end
 
       def heal

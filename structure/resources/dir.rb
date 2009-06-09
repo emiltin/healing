@@ -1,6 +1,6 @@
 module Healing
   module Structure
-    class Dir <  Base
+    class Dir < Resource
 
       def initialize parent, path, options={}
         super parent, options.merge(:path => path)

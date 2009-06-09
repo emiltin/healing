@@ -1,6 +1,6 @@
 module Healing
   module Structure
-    class LineInFile <  Base
+    class LineInFile < Resource
   
       def initialize parent, path, options={}
         super parent, options.merge(:path => path, :content => options[:content].strip)

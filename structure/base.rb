@@ -8,31 +8,40 @@ module Healing
         end
       end
 
-      attr_accessor :children, :parent, :depth
-      
+      attr_accessor :resources, :parent, :depth, :parent_cloud
+
       def initialize parent, options={}, &block
-        @children = []
+        @resources = []
         @parent = parent
-        @parent.children << self if parent
         @options = defaults.merge(options)
         @depth = @parent ? @parent.depth+1 : 0
         eval_block &block
         validate
       end
-      
+
       def eval_block &block
         eval("#{self.class.name}::Lingo").new(self).instance_eval &block if block
       end
-      
+
+      def before &block
+        eval("#{parent_cloud.class.name}::Lingo").new(self).instance_eval &block
+      end
+
+      def cloud_path
+        path = [self]
+        path.unshift path.first.parent while path.first.parent
+        path
+      end
+
       def defaults
         {}
       end
-      
+
       def validate
       end
-      
+
       def heal
-        @children.each { |c| c.heal }
+        @resources.each { |c| c.heal }
       end
 
       def revert
@@ -45,11 +54,11 @@ module Healing
       def log str, level=0
         puts '   '*(@depth+level) + str
       end
-      
+
       def puts_title k,v
-        log "#{k}: #{v}"
+        log "#{k.to_s.capitalize.gsub('_',' ')}: #{v}"
       end
-      
+
       def puts_setting k,v=nil
         v = @options[k] unless v
         if v
@@ -60,10 +69,7 @@ module Healing
         log "#{k}: #{v}", 1
       end
 
-      def has &block
-        eval("#{@parent.class.name}::Lingo").new(self).instance_eval &block
-      end
-      
+
       def describe options={}
         describe_name
         describe_settings
@@ -74,13 +80,13 @@ module Healing
       end
 
       def describe_children options={}
-        @children.each { |item| item.describe options }
+        @resources.each { |item| item.describe options }
       end
 
       def method_missing(sym, *args, &block)
         if match = sym.to_s.match(/(.+)\?/)
           @options[match[1].to_sym]!=nil &&
-            (@options[match[1].to_sym]!=false && @options[match[1].to_sym]!= :false && @options[match[1].to_sym]!=0 )
+          (@options[match[1].to_sym]!=false && @options[match[1].to_sym]!= :false && @options[match[1].to_sym]!=0 )
         elsif match = sym.to_s.match(/(.+)=/)
           @options[match[1].to_sym] = args[0]
           args[0]
@@ -89,7 +95,7 @@ module Healing
         end
       end
 
-      
+
     end
   end
 end

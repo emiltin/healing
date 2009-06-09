@@ -117,3 +117,50 @@ launching all subclouds in a single ec2 call is not possible if they have differ
 
 added a provisioner class that handles resizing of clouds. it feels clean to have the resizing code in a separate class. instead of recursing into subclouds all the time, i maintain a list of all subclouds in the root, which also feels cleaner.
 only i'm not sure of is the bootstrapping. it might be better to move somewhere else, since it's more related to 'software' layer that the 'hardware' layer. bootstrapping might look different depending on the image, distro, etc. i think the provisioner should simply take care of stting up the right instances and volumes, so we're ready to install software and services.
+
+
+i now have a working rails_app resource that does can deploy a rails app using passenger (although it's a bit rought). it uses sub-resources to install packages, edit config files, etc.
+but one problem with this is that they're run before the rails_app resource, so we can't modify settings live at the instances, only when we setup the ideal on the host.
+it also needs to handle code updates, and probably use a cap-like folder layout with releases/, current/, etc.
+it would be cool if it could read the rails database.yml file and install the needed db automatically.
+
+it would be nice to maintain a list of gem>package dependencies. for example, when we install the mysql gem, we always need the mysql package first. hmm, but rails has a system for installing the needed gems for a specific app, this would still require that we install the needed packages beforehand.
+
+have to remember that the code is run in two different settings - on the host and on the instance. 
+
+
+what happens when a resources needs to add subrosources depending on processing on the instance? in that case the cloud structure will be different on the host and on the instances. that seems like a path that leads into trouble.
+but it would be nice if rails_app could decide packages automatically. one alternative would be to le the user point to a local copy of the rails app, so we can analyze it locally.
+
+how should i handle situations where a package, gem or other resource is declared multiple times?
+
+package 'mysql'
+package 'mysql'		#should simple install mysql one time
+
+rubugem 'mysql-ruby', :version => 2
+rubugem 'mysql-ruby', :version => 3			#install a different version too
+
+file '/bla', :content => 'anna'
+file '/bla', :content => 'sarah'			#issue a warning? disallow?
+
+
+
+we have a tree of structure elements.... but in the end, it's 'collapsed' into the actual stuff thats installed in each instances. 
+
+this makes me realize that there's a problem with the way different clouds are healed - stuff in parent clouds are currently not installed in sub clouds. for example:
+
+cloud :app do
+  remoter :ec2
+  key '/Users/emiltin/.ec2/testpair'
+  uuid 'gi48gjdj33'
+  image 'ami-bf5eb9d6'
+  file '/etc/motd', :content => 'Hi!'
+  cloud :db do
+    uuid '4jjkkjwr3jk22'
+    instances 1
+  end
+end
+
+this should install the file in the db subcloud, but doesn't currently.
+
+ok, now super clouds are applied to instances as well. (but of course not sibling clouds)

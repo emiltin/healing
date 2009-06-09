@@ -7,6 +7,10 @@ module Healing
           Cloud.new( @parent, {:name=>name, :root => @parent.root}, &block)
         end
 
+        def parent_cloud
+          self
+        end
+
         def remoter p
           raise "You can only specify one remoter!" if @parent.remoter
           @parent.remoter = Healing::Remoter::Base.build p
@@ -39,17 +43,14 @@ module Healing
         end
 
         def method_missing(sym, *args, &block)
-          if match = sym.to_s.match(/^not_(.+)/)
-            p "NOT"
-            sym = match[1]
-          end
+     #     if match = sym.to_s.match(/^not_(.+)/)
+    #        sym = match[1]
           eval("Healing::Structure::#{sym.to_s.camelcase}").new @parent, *args, &block
         end
-
       end
+      
 
-
-      attr_accessor :subclouds, :volumes, :clouds
+      attr_accessor :subclouds, :volumes, :clouds, :packages, :gems
 
       class << self
         attr_accessor :root
@@ -63,6 +64,8 @@ module Healing
       def initialize parent, options, &block
         @subclouds = []
         @volumes = []
+        @packages = []
+        @gems = []
         super parent, options
         raise "Clouds must be created with a block!" unless block
         @parent.subclouds << self if @parent
@@ -125,13 +128,13 @@ module Healing
         @key
       end
 
-      def heal
-        describe_name
-        super
-      end
-
       def get_uuid
         uuid
+      end
+
+      def describe_children options={}
+        super
+        @subclouds.each { |item| item.describe options }
       end
 
       def describe_name
@@ -139,8 +142,22 @@ module Healing
       end
       
       def describe_settings
+    #    puts "packages: "+@packages.map { |p| p.name }.join(', ').to_s
+    #    puts "gems: "+@gems.map { |p| p.name }.join(', ').to_s
         puts_setting :uuid, uuid if uuid
         puts_setting :instances, num_instances if num_instances
+      end
+
+      
+      def heal_from_root
+        cloud_path.each do |element|
+          element.heal
+        end
+      end
+
+      def heal
+        describe_name
+        super
       end
 
     end

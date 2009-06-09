@@ -1,6 +1,6 @@
 module Healing
   module Structure
-    class Repo <  Base
+    class Repo < Resource
 
       def initialize parent, path, options={}
         super parent, options.merge(:path => path)

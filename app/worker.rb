@@ -25,7 +25,7 @@ module Healing
   
       def heal
         puts "Healing initiated."
-        @cloud.heal
+        @cloud.heal_from_root
         puts "Done."
       end
     end

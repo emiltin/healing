@@ -13,10 +13,11 @@ module Healing
       end
     
       def describe_name
-        puts_title :execute, "#{name}: #{command}"
+        puts_title :execute, "#{name}"
       end
       
       def describe_settings
+        puts_setting :command
 #        puts_setting :block if block.to_s
       end
 

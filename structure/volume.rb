@@ -1,11 +1,11 @@
 module Healing
   module Structure
-    class Volume <  Base
+    class Volume < Resource
       
       def initialize parent, vol_id, options={:device => '/dev/sdh'}
         super parent, options.merge(:vol_id=>vol_id)
         @parent.volumes << self
-        has do
+        before do
           package 'xfsprogs'
           execute 'add device', 'mkfs.xfs /dev/sdh'
           execute 'add volume to filetab', 'echo "/dev/sdh /vol xfs noatime 0 0" >> /etc/fstab'

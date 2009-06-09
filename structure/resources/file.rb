@@ -1,6 +1,6 @@
 module Healing
   module Structure
-    class File <  Base
+    class File <  Resource
   
       def initialize parent, path, options={}
         super parent, options.merge(:path => path)
@@ -34,9 +34,12 @@ module Healing
       end
       
       def describe_settings
-        puts_setting :remove if remove?
-        puts_setting :content if content
-        puts_setting :mode if mode
+        if remove?
+          puts_setting :remove
+        else
+          puts_setting :content if content
+          puts_setting :mode if mode
+        end
       end
     
     end
