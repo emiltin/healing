@@ -32,10 +32,12 @@ module Healing
           @parent.num_instances = number
         end
 
-        def recipe path
+        def recipe path, options={}
+          @options = Options.new(options)
           instance_eval ::File.read("recipes/#{path}.rb")
         end
-
+        
+        #git_repo() will instantiate a Healing::Structure::GitRepo object, etc..
         def method_missing(sym, *args, &block)
      #     if match = sym.to_s.match(/^not_(.+)/)
     #        sym = match[1]
