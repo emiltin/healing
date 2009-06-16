@@ -2,7 +2,14 @@
 sqlite3-ruby: 
 - sqlite3
 - libsqlite3-dev
+mysql:
+- libmysqlclient15-dev
 passenger: 
 - apache2-mpm-prefork
 - apache2-prefork-dev
 - libapr1-dev
+libxml-ruby: 
+- libxml2-dev
+
+
+			 

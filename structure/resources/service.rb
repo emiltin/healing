@@ -38,15 +38,16 @@ module Healing
       
       def start
         #TODO method of starting services depend on platform..
-        run "/etc/init.d/#{name} start"
+        run "echo 'hallo'"
+        run "sudo /etc/init.d/#{name} start"
       end
       
       def stop
-        run "/etc/init.d/#{name} stop"
+        run "sudo /etc/init.d/#{name} stop"
       end
       
       def restart
-        run "/etc/init.d/#{name} restart"
+        run "sudo /etc/init.d/#{name} restart"
       end
       
       def describe_name
