@@ -6,5 +6,3 @@ passenger:
 - apache2-mpm-prefork
 - apache2-prefork-dev
 - libapr1-dev
-mysql: 
-- mysql-dev
