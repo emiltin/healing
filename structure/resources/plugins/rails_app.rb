@@ -11,7 +11,7 @@ module Healing
         the_repo = repo
         the_env = env
         
-        lingo do
+        recipe do
           recipe 'passenger'
           git_repo "/#{the_name}", :url => the_repo, :user => 'www-data', :group => 'www-data'
 

@@ -2,6 +2,9 @@
 Dir.glob('utilities/*.rb') { |file| require file }     
 Dir.glob('core/*.rb') { |file| require file }     
 
+
+
+
 require 'structure/base.rb'
 require 'structure/resources/resource'
 require 'structure/resources/file'
@@ -13,7 +16,6 @@ require 'structure/resources/rubygem'
 require 'structure/resources/execute'
 require 'structure/resources/repo'
 require 'structure/resources/git_repo'
-require 'structure/resources/rails_app'
 require 'structure/cloud'
 require 'structure/instance'
 require 'structure/root'
@@ -28,8 +30,11 @@ require 'app/worker'
 require 'app/provisioner'
 require 'app/bootstrapper'
 
-CLOUD_UUID_PATH = '/healing/cloud_uuid'
-
 #File.dirname(__FILE__)+"/
 Healing::Structure::Rubygem.load_dependencies 'gem_dependencies.yml'
+
+
+Dir.glob('structure/resources/plugins/*.rb') { |file| require file }     
+
+CLOUD_UUID_PATH = '/healing/cloud_uuid'
 

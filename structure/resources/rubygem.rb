@@ -29,7 +29,7 @@ module Healing
       
       def include_dependencies
         packs = @@dependencies[name]
-        lingo do
+        recipe do
           packs.each { |pack| package pack } if packs
         end
       end

@@ -10,7 +10,7 @@ cloud :test do
   #rubygem 'sqlite3-ruby'
   #rubygem 'mysql'
 
-  recipe 'mysql-ebs', :volume_id => 'vol-4943a020'
+  mysql_ebs 'vol-4943a020'
   
   #rails_app 'poolparty_example', :repo => 'git://github.com/emiltin/poolparty_example.git', :env => :development
 end

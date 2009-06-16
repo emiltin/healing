@@ -34,7 +34,7 @@ module Healing
         @parent.nearest_cloud
       end
       
-      def lingo &block
+      def recipe &block
         pa = parent_cloud
         eval("#{pa.class.name}::Lingo").new(self).instance_eval &block
       end
