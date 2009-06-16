@@ -3,8 +3,12 @@ module Healing
     class Base
 
       class Lingo
+        
+        attr_accessor :options
+        
         def initialize parent
           @parent = parent
+          @options = {}
         end
       end
 
@@ -34,9 +38,11 @@ module Healing
         @parent.nearest_cloud
       end
       
-      def recipe &block
+      def recipe options={}, &block
         pa = parent_cloud
-        eval("#{pa.class.name}::Lingo").new(self).instance_eval &block
+        lingo = eval("#{pa.class.name}::Lingo").new(self)
+        lingo.options = Options.new(options)
+        lingo.instance_eval &block
       end
 
       def cloud_path

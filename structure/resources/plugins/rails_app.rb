@@ -5,22 +5,16 @@ module Healing
       def initialize parent, name, options
         super parent, options.merge(:name => name)
         
-        #lingo() is evaluated by the parent cloud, so we can't use our own intance methods. so copy to locals
-        #FIXME this kinda sucks
-        the_name = name
-        the_repo = repo
-        the_env = env
-        
-        recipe do
+        recipe @options do        #pass in @options so we can access them in the lingo block
           recipe 'passenger'
-          git_repo "/#{the_name}", :url => the_repo, :user => 'www-data', :group => 'www-data'
+          git_repo "/#{@options.name}", :url => @options.repo, :user => 'www-data', :group => 'www-data'
 
           #remove default virtual host
           file '/etc/apache2/sites-enabled/000-default', :remove => true
 
           #add virtual host
-          file "/etc/apache2/sites-enabled/#{the_name}", :content => <<-EOF
-<Directory "/#{the_name}">
+          file "/etc/apache2/sites-enabled/#{@options.name}", :content => <<-EOF
+<Directory "/#{@options.name}">
  Options FollowSymLinks
  AllowOverride None
  Order allow,deny
@@ -29,8 +23,8 @@ module Healing
 
 <VirtualHost *:80>
  ServerName localhost
- DocumentRoot /#{the_name}/public
- RailsEnv #{the_env}
+ DocumentRoot /#{@options.name}/public
+ RailsEnv #{@options.environment}
 </VirtualHost>
           EOF
 

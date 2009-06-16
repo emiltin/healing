@@ -159,3 +159,18 @@ it might be useful to create two subclasses from structure::base - leaf and bran
 
 
 there's definately a problem with how before() works.
+
+
+did a bit of work on recipes, mysql+ebs support and related stuff. using recipe blocks in resource initializers seems to work fine, i added support for passing a hash of options to recipes, they are then available inside the recipe block as @options.
+
+mysql+ebs is now as easy as:
+
+mysql_ebs 'vol-4943a020'
+
+that's quite cool. but there seems to be a problem when the instances is healed first time, and mysql is restarted after moving to the ebs volume:
+
+error: 'Access denied for user 'debian-sys-maint'@'localhost' (using password: YES)'
+ERROR 1045 (28000): Access denied for user 'debian-sys-maint'@'localhost' (using password: YES)
+
+
+can now deploy a rails app using with passenger and mysql on an ebs volume - oh yeah!

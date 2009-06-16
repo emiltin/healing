@@ -32,9 +32,8 @@ module Healing
           @parent.num_instances = number
         end
 
-        def recipe path, options={}
-          @options = Options.new(options)
-          instance_eval ::File.read("recipes/#{path}.rb")
+        def recipe file, options={}, &block
+          Recipe.new @parent, file, options, &block
         end
         
         #git_repo() will instantiate a Healing::Structure::GitRepo object, etc..

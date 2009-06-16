@@ -1,1 +1,0 @@
-file '/tmp/healing', :content => "wow this is wonderful!"
