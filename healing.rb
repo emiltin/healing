@@ -29,3 +29,7 @@ require 'app/provisioner'
 require 'app/bootstrapper'
 
 CLOUD_UUID_PATH = '/healing/cloud_uuid'
+
+#File.dirname(__FILE__)+"/
+Healing::Structure::Rubygem.load_dependencies 'gem_dependencies.yml'
+

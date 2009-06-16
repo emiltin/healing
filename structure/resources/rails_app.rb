@@ -5,13 +5,13 @@ module Healing
       def initialize parent, name, options
         super parent, options.merge(:name => name)
         
-        #before() is evaluated by the parent cloud, so we can't use our own intance methods. so copy to locals
+        #lingo() is evaluated by the parent cloud, so we can't use our own intance methods. so copy to locals
         #FIXME this kinda sucks
         the_name = name
         the_repo = repo
         the_env = env
         
-        parent.before do
+        lingo do
           recipe 'passenger'
           git_repo "/#{the_name}", :url => the_repo, :user => 'www-data', :group => 'www-data'
 
@@ -30,7 +30,7 @@ module Healing
 <VirtualHost *:80>
  ServerName localhost
  DocumentRoot /#{the_name}/public
- RailsEnv development
+ RailsEnv #{the_env}
 </VirtualHost>
           EOF
 

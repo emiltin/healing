@@ -1,9 +1,9 @@
 
 #recipe for running rails with apache and passenger (mod_rails)
 
-package 'apache2-mpm-prefork'
-package 'apache2-prefork-dev'
-package 'libapr1-dev'
+#package 'apache2-mpm-prefork'
+#package 'apache2-prefork-dev'
+#package 'libapr1-dev'
 rubygem 'rails'
 rubygem 'passenger'
 

@@ -5,7 +5,7 @@ module Healing
       def initialize parent, path, options={}
         super parent, path, options
 
-        before do
+        lingo do
           package 'git-core'
         end
 

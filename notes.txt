@@ -156,3 +156,6 @@ need to handle different images for different clouds..
 both gems and services should automatically include any needed packages.
 
 it might be useful to create two subclasses from structure::base - leaf and branch. only branches would have @resources etc.
+
+
+there's definately a problem with how before() works.

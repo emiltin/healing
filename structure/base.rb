@@ -8,7 +8,7 @@ module Healing
         end
       end
 
-      attr_accessor :resources, :parent, :depth, :parent_cloud
+      attr_accessor :resources, :parent, :depth
 
       def initialize parent, options={}, &block
         @resources = []
@@ -18,13 +18,25 @@ module Healing
         eval_block &block
         validate
       end
-
+      
+      def compile
+      end
+      
       def eval_block &block
         eval("#{self.class.name}::Lingo").new(self).instance_eval &block if block
       end
-
-      def before &block
-        eval("#{parent.class.name}::Lingo").new(self).instance_eval &block
+      
+      def parent_cloud
+        @parent ? @parent.nearest_cloud : nil
+      end
+      
+      def nearest_cloud
+        @parent.nearest_cloud
+      end
+      
+      def lingo &block
+        pa = parent_cloud
+        eval("#{pa.class.name}::Lingo").new(self).instance_eval &block
       end
 
       def cloud_path
@@ -41,9 +53,13 @@ module Healing
       end
 
       def heal
+        heal_resources
+      end
+      
+      def heal_resources
         @resources.each { |c| c.heal }
       end
-
+      
       def revert
       end
 
@@ -52,7 +68,7 @@ module Healing
       end
 
       def log str, level=0
-        puts '   '*(@depth+level) + str
+        puts '.  '*(@depth+level) + str
       end
 
       def puts_title k,v
@@ -64,12 +80,15 @@ module Healing
         if v
           max = 50
           v = v.to_s.strip.split("\n")[0]
-          v = "#{v[0..max]}..." if v.size > max
+          v = "#{v[0..max]}..." if v && v.size > max
         end
-        log "#{k}: #{v}", 1
+        log " #{k}: #{v}", 1
       end
 
-
+      def order
+        puts "  #{self.class.name.gsub(/.*::/,'')}: #{name}"
+      end
+      
       def describe options={}
         describe_name
         describe_settings

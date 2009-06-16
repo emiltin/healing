@@ -7,10 +7,6 @@ module Healing
           Cloud.new( @parent, {:name=>name, :root => @parent.root}, &block)
         end
 
-        def parent_cloud
-          self
-        end
-
         def remoter p
           raise "You can only specify one remoter!" if @parent.remoter
           @parent.remoter = Healing::Remoter::Base.build p
@@ -24,11 +20,9 @@ module Healing
           @parent.key = path
         end
 
-
         def uuid u
           @parent.uuid = u.to_s
         end
-
 
         def instance name, &block
           Instance.new( @parent, {:name=>name, :root => @parent.root, :num_instances => 1}, &block)
@@ -50,7 +44,7 @@ module Healing
       end
       
 
-      attr_accessor :subclouds, :volumes, :clouds, :packages, :gems
+      attr_accessor :subclouds, :volumes, :clouds, :packages, :gems, :collection
 
       class << self
         attr_accessor :root
@@ -64,13 +58,31 @@ module Healing
       def initialize parent, options, &block
         @subclouds = []
         @volumes = []
-        @packages = []
-        @gems = []
         super parent, options
         raise "Clouds must be created with a block!" unless block
         @parent.subclouds << self if @parent
         root.clouds << self
         Cloud.clouds << self 
+      end
+      
+      def compile
+        @gems = parent_cloud ? parent_cloud.gems.dup : []
+        @packages = parent_cloud ? parent_cloud.packages.dup : []
+        @collection = parent_cloud ? parent_cloud.collection.dup : []
+        @resources.each { |i| i.compile }
+        @subclouds.each { |i| i.compile }
+      end
+      
+      def preflight
+        puts "Cloud: #{name}"
+        puts "  Packages: "+@packages.map { |p| p.name }.join(', ').to_s if @packages.any?
+        puts "  Gems: "+@gems.map { |p| p.name }.join(', ').to_s if @gems.any?
+        puts "  Resources: "+@resources.map { |p| p.name }.join(', ').to_s if @resources.any?
+        @subclouds.each { |i| i.preflight }
+      end
+      
+      def nearest_cloud
+        self
       end
 
       def my_instances
@@ -142,8 +154,6 @@ module Healing
       end
       
       def describe_settings
-    #    puts "packages: "+@packages.map { |p| p.name }.join(', ').to_s
-    #    puts "gems: "+@gems.map { |p| p.name }.join(', ').to_s
         puts_setting :uuid, uuid if uuid
         puts_setting :instances, num_instances if num_instances
       end
@@ -160,6 +170,32 @@ module Healing
         super
       end
 
+      def order
+        if @collection.any?
+          puts "Cloud: #{name}"
+          @collection.each do |i|
+            i.order
+          end
+        end
+      end
+      
+      
+      def reorder
+        copy = @collection.dup
+        copy.each do |i|
+          if i.is_a? Rubygem
+            @collection.delete i
+            @collection.unshift i
+          end
+        end
+        copy.each do |i|
+          if i.is_a? Package
+            @collection.delete i
+            @collection.unshift i
+          end
+        end
+      end
+      
     end
   end
 end

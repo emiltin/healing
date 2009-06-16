@@ -14,6 +14,16 @@ module Healing
         @map = Remoter::Map.new self
       end  
 
+      def compile
+        super
+      end
+
+      def preflight_root
+        @clouds.each do |c|
+          c.preflight
+        end
+      end
+      
       def remoter
         @remoter
       end
@@ -104,7 +114,8 @@ module Healing
           #      puts "No pruning needed."
         end
       end
-
+      
+      
     end
   end
 end

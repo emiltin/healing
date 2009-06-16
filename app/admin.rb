@@ -11,6 +11,11 @@ module Healing
         @cloud.describe :recurse => true
       end
   
+      def compile
+        @cloud.compile
+        @cloud.preflight
+      end
+  
       def upload
         @cloud.install
       end

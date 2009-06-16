@@ -4,9 +4,12 @@ module Healing
   
       def initialize parent, name, options={}
         super parent, options.merge(:name => name)
-     #   parent_cloud.packages << self
       end
-
+      
+      def compile
+        parent_cloud.packages << self
+      end
+      
       def heal
         describe_name
         run "apt-get install -y #{name} "
