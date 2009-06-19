@@ -1,7 +1,26 @@
 module Healing
   module Structure
-    class Service < Resource
 
+    class Service < Resource
+      
+      class Stopped < Resource
+        class Lingo < Structure::Cloud::Lingo
+        end
+        def describe_name
+          puts_title :while_stopped, ''
+        end
+        def heal
+          describe_name
+          super
+        end
+        def heal_resources
+          @parent.stop
+          super
+          #the service will set it's state itself
+        end
+        
+      end
+      
       class Lingo < Resource::Lingo
         def on
           @parent.state = :on
@@ -9,6 +28,10 @@ module Healing
         
         def off
           @parent.state = :off
+        end
+        
+        def while_stopped &block
+          Service::Stopped.new( @parent, {:root => @parent.root}, &block)
         end
       end
   
@@ -26,11 +49,13 @@ module Healing
       
       def heal
         describe_name
+        stop if stop_during_setup?
+        heal_resources
         case state
           when :on
             start
-          when :restart
-            restart
+    #      when :restart
+    #        restart
           when :off
             stop
         end

@@ -88,7 +88,7 @@ module Healing
           v = v.to_s.strip.split("\n")[0]
           v = "#{v[0..max]}..." if v && v.size > max
         end
-        log " #{k}: #{v}", 1
+    #    log " #{k}: #{v}", 1
       end
 
       def order

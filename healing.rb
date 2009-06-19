@@ -4,11 +4,17 @@ Dir.glob('core/*.rb') { |file| require file }
 
 
 
+#note: the order of the requires below is significant to avoid load errors
 
 require 'structure/base.rb'
 require 'structure/resources/resource'
+require 'structure/cloud'
+require 'structure/instance'
+require 'structure/root'
+require 'structure/volume'
 require 'structure/resources/recipe'
 require 'structure/resources/file'
+require 'structure/resources/link'
 require 'structure/resources/line_in_file'
 require 'structure/resources/dir'
 require 'structure/resources/package'
@@ -17,10 +23,6 @@ require 'structure/resources/rubygem'
 require 'structure/resources/execute'
 require 'structure/resources/repo'
 require 'structure/resources/git_repo'
-require 'structure/cloud'
-require 'structure/instance'
-require 'structure/root'
-require 'structure/volume'
 require 'remoters/base'
 require 'remoters/ec2'
 require 'remoters/instance'

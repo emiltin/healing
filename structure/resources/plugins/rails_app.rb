@@ -6,15 +6,19 @@ module Healing
         super parent, options.merge(:name => name)
         
         recipe @options do        #pass in @options so we can access them in the lingo block
-          recipe 'passenger'
+          recipe 'passenger', :version => '2.2.3'
           git_repo "/#{@options.name}", :url => @options.repo, :user => 'www-data', :group => 'www-data'
+          
+          the_options = @options
 
-          #remove default virtual host
-          file '/etc/apache2/sites-enabled/000-default', :remove => true
+          service 'apache2' do
+            while_stopped do
+              #remove default virtual host
+              file '/etc/apache2/sites-enabled/000-default', :remove => true
 
-          #add virtual host
-          file "/etc/apache2/sites-enabled/#{@options.name}", :content => <<-EOF
-<Directory "/#{@options.name}">
+              #add virtual host
+              file "/etc/apache2/sites-enabled/#{the_options.name}", :content => <<-EOF
+<Directory "/#{the_options.name}">
  Options FollowSymLinks
  AllowOverride None
  Order allow,deny
@@ -23,12 +27,12 @@ module Healing
 
 <VirtualHost *:80>
  ServerName localhost
- DocumentRoot /#{@options.name}/public
- RailsEnv #{@options.environment}
+ DocumentRoot /#{the_options.name}/public
+ RailsEnv #{the_options.environment}
 </VirtualHost>
-          EOF
-
-          service 'apache2' => :restart
+EOF
+            end
+          end
         end
       end
       

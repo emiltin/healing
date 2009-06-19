@@ -174,3 +174,15 @@ ERROR 1045 (28000): Access denied for user 'debian-sys-maint'@'localhost' (using
 
 
 can now deploy a rails app using with passenger and mysql on an ebs volume - oh yeah!
+however, it depends on the mysql folder having been previously copied to the ebs volume. it would be nice if the mysql_ebs plugin could handle this. if the mysql folders are not on the ebs volume, it should copy them from the main volume?
+
+should the rails_app should run initial rake:db create and rake db:migrate if needed?
+
+i'm still not sure there is any real difference between 'indempotent' actions and a step-by-step instruction... both things implicitely describe both the end state and the process.
+
+
+as much as possible, we want user to be able to simly dscribe end states, and let th system figure out the process to reach that state. but sometimes, the system needs hints on how to reach the process - the order things must be done it, etc.
+puzzle metaphor: it's easy to describe the end state, but without hints to the process, it can be hard to reach that end state.
+
+
+it's impractical that the structure is intialized the same way during bin/ideal and bin/heal, since this mean the execution is inflexible, and can't depend on runtime information. for example, the passenger recipe needs a reference to the currently intalled version of the passenger gem, which needs to be determined at runtime. and the entire recipe is currently evaluated at runtime, but also at bin/ideal time. so if we insert code in the recipe it will also be run on the host during bin/ideal.
