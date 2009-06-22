@@ -4,8 +4,10 @@ require 'rubygems'
 require 'trollop'
 #require File.dirname(__FILE__)+'/../lib/healing'
 
+parser = nil
 opts = Trollop::options do
-  opt :ideal, "ideal.rb file", :type => :string, :default => 'ideal.rb'
+  opt :ideal, "ideal file", :type => :string, :default => 'ideal.rb'
+  parser = self
 end
 
 h = Healing::App::Admin.new

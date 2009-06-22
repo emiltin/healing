@@ -7,17 +7,18 @@ require File.dirname(__FILE__)+'/../lib/healing'
 
 commands = ['ideal','scan']
 
+parser = nil
 opts = Trollop::options do
+  parser = self
   stop_on commands
   opt :version, "show version"
   version "Healing 0.1.0"   #TODO should fetch this from a yaml file, so we don't forget to update it
-  banner <<-EOF
-Healing is a cloud configuration system.
-EOF
+  banner "\nHealing is a cloud configuration system."
 end
 
 
 if ARGV.empty?
+  puts "Usage:\n\theal <command> <options>\n\n"
   puts "Commands:"
   puts commands.map {|c| "\t#{c}\n" }
   exit
