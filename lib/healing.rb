@@ -34,7 +34,7 @@ module Healing
   require BASE+'/lib/app/provisioner'
   require BASE+'/lib/app/bootstrapper'
 
-  #File.dirname(__FILE__)+"/
+
   Healing::Structure::Rubygem.load_dependencies BASE+'/lib/gem_dependencies.yml'
 
 
