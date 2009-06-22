@@ -1,7 +1,41 @@
 #!/usr/bin/env ruby
 
-require 'lib/healing'
-require 'lib/app/admin'
+require 'rubygems'
+require 'trollop'
+require File.dirname(__FILE__)+'/../lib/healing'
 
-h = Healing::App::Admin.new
-h.heal
+
+commands = ['ideal','scan']
+
+opts = Trollop::options do
+  stop_on commands
+  opt :version, "show version"
+  version "Healing 0.1.0"   #TODO should fetch this from a yaml file, so we don't forget to update it
+  banner <<-EOF
+Healing is a cloud configuration system.
+EOF
+end
+
+
+if ARGV.empty?
+  puts "Commands:"
+  puts commands.map {|c| "\t#{c}\n" }
+  exit
+end
+
+cmd = ARGV.shift
+path = Healing::BASE+'/bin/heal-'+cmd
+load path   #run subcommand
+
+
+
+#require 'healing'
+
+#h = Healing::App::Admin.new
+#h.describe
+
+#require 'lib/healing'
+#require 'lib/app/admin'
+
+#h = Healing::App::Admin.new
+#h.heal

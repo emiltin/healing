@@ -1,0 +1,13 @@
+#!/usr/bin/env ruby
+
+require 'rubygems'
+require 'trollop'
+#require File.dirname(__FILE__)+'/../lib/healing'
+
+opts = Trollop::options do
+  opt :ideal, "ideal.rb file", :type => :string, :default => 'ideal.rb'
+end
+
+h = Healing::App::Admin.new
+h.load_ideal opts[:ideal]
+h.scan

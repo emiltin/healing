@@ -3,10 +3,6 @@ module Healing
   module App
     class Admin < Base
   
-      def load_ideal
-        super
-      end
-  
       def describe
         @cloud.describe :recurse => true
       end

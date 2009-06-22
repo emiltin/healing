@@ -4,7 +4,6 @@ module Healing
   module App
     class Base
       def initialize
-        load_ideal
       end
   
       def self.run_locally cmd, options={}
@@ -20,9 +19,10 @@ module Healing
         #result  = `#{cmd}`
       end
   
-      def load_ideal
+      def load_ideal path
         return if @cloud
-        require 'ideal.rb'
+        raise "Ideal file not found: #{path}" unless ::File.exists? path
+        require path
         @cloud = Healing::Structure::Cloud.root
         raise "No cloud defined in ideal.rb!" unless @cloud
       end

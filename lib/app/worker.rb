@@ -1,4 +1,3 @@
-#require BASE+'/healing'
 
 module Healing
   module App

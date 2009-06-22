@@ -1,7 +1,0 @@
-#!/usr/bin/env ruby
-
-require 'lib/healing'
-require 'lib/app/admin'
-
-h = Healing::App::Admin.new
-h.scan

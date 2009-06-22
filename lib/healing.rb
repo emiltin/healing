@@ -45,4 +45,5 @@ module Healing
 
 
   require BASE+'/lib/app/admin'
+  require BASE+'/lib/app/worker'
 end
