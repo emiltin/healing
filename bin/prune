@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 
-require 'healing'
-require 'app/admin'
+require 'lib/healing'
+require 'lib/app/admin'
 
 h = Healing::App::Admin.new
 h.prune

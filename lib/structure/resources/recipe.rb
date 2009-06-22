@@ -10,7 +10,7 @@ module Healing
         pa = parent_cloud
         lingo = eval("#{pa.class.name}::Lingo").new(self)
         lingo.options = Options.new(options)
-        lingo.instance_eval ::File.read("recipes/#{file}.rb")
+        lingo.instance_eval ::File.read(BASE+"/lib/recipes/#{file}.rb")
       end
       
       def describe_name

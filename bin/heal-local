@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-require 'healing'
+require 'lib/healing'
 
 healer = Healing::App::Worker.new
 healer.heal

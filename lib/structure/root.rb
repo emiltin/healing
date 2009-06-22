@@ -2,7 +2,7 @@ module Healing
   module Structure
     class Root < Cloud
 
-      include Threading
+      include Healing::Threading
 
       attr_accessor :remoter, :image, :map, :armed, :clouds
       
