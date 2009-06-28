@@ -8,7 +8,7 @@ module Healing
       end
       
       def describe_name
-        puts_title :section, options.name
+        puts_title :run, options.name
       end
       
       def describe_settings
