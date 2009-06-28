@@ -13,9 +13,9 @@ module Healing
       def heal
         super
         run "git clone --depth 1 #{options.url} #{options.path}"
-        if user && group
+        if options.user && options.group
           run "chown #{options.user}:#{options.group} #{options.path} -R"
-        elsif user
+        elsif options.user
           run "chown #{options.user} #{options.path} -R"
         end
       end

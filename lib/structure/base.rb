@@ -4,7 +4,7 @@ module Healing
 
       class Lingo
         
-        attr_accessor :options
+        attr_accessor :options, :target, :owner
         
         def initialize owner,target, options={}
           @owner = owner
@@ -48,6 +48,10 @@ module Healing
       
       def recipe name='', options={}, &block
         lingo.recipe name, options, &block
+      end
+      
+      def run_recipe name='', options={}, &block
+        recipe(name, options, &block).heal
       end
       
       def compile

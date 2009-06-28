@@ -8,7 +8,7 @@ module Healing
         end
 
         def remoter p
-          raise "You can only specify one remoter!" if @target.options.remoter
+     #     raise "You can only specify one remoter!" if @target.options.remoter
           @target.options.remoter = p
         end
 
@@ -113,7 +113,7 @@ module Healing
       end
 
       def validate
-        raise "Cloud uuid not set in '#{name}'" unless options.uuid || !options.num_instances
+        raise "Cloud uuid not set in '#{options.name}'" unless options.uuid || !options.num_instances
       end
 
       def root?

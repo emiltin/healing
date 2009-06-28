@@ -14,7 +14,11 @@ module Healing
       def describe_settings
      #   @options.each_pair { |k,v| puts_setting k,v }
       end
-
+      
+      def heal
+        describe_name
+        super
+      end
   
     end
   end

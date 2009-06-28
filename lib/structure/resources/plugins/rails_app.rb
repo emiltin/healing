@@ -7,7 +7,6 @@ module Healing
         
         lingo self, options.to_hash do        #pass on options to the lingo block
           recipe 'passenger', :version => '2.2.3'
-          p self.class.name
           git_repo "/#{options.name}", :url => options.repo, :user => 'www-data', :group => 'www-data'
           
           the_options = options

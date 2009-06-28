@@ -14,6 +14,7 @@ module Healing
   require BASE+'/lib/structure/root'
   require BASE+'/lib/structure/volume'
   require BASE+'/lib/structure/resources/recipe'
+  require BASE+'/lib/structure/resources/run'
   require BASE+'/lib/structure/resources/file'
   require BASE+'/lib/structure/resources/link'
   require BASE+'/lib/structure/resources/line_in_file'

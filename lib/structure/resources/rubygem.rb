@@ -37,8 +37,8 @@ module Healing
       end
       
       def heal
-        heal_resources
         describe_name
+        heal_resources
         run "gem install --no-rdoc --no-ri #{options.name} "
       end
 
