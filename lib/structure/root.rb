@@ -4,16 +4,26 @@ module Healing
 
       include Healing::Threading
 
-      attr_accessor :remoter, :image, :map, :armed, :clouds
+      attr_accessor :remoter, :map, :armed, :clouds
       
-      def initialize options, &block
+      def initialize o, &block
         raise "You can only define one root cloud!" if Cloud.root
         Cloud.root = self
         @clouds = []
-        super( nil, {:name => options[:name], :root => self}, &block )
+        @root = self
+        super  nil, o, &block
         @map = Remoter::Map.new self
+        build_remoter
       end  
-
+      
+      def build_remoter
+        @remoter = Healing::Remoter::Base.build options.remoter
+      end
+      
+      def defaults
+        { :image => 'ami-bf5eb9d6', :remoter => :ec2 }
+      end
+      
       def compile
         super
       end
@@ -28,21 +38,17 @@ module Healing
         @remoter
       end
 
-      def image
-        @image
-      end
-
       def describe_settings
         super
-        puts_setting :key, key_path
-        puts_setting :image, @image
-        puts_setting :remoter, @remoter.name
+        puts_setting :key, options.key
+        puts_setting :image, options.image
+        puts_setting :remoter, options.remoter
       end
 
       def validate
         super
-        raise "You must specify a remoter in the root cloud!" unless @remoter
-        raise "You must specify an image in the root cloud!" unless @image
+        raise "You must specify a remoter in the root cloud!" unless options.remoter
+        raise "You must specify an image in the root cloud!" unless options.image
       end
 
       def root?
@@ -50,7 +56,7 @@ module Healing
       end
 
       def terminate
-        puts "Terminating cloud '#{name}'"
+        puts "Terminating cloud '#{options.name}'"
         #our map only includes running instances, but we also want to terminate pending instances
         list = remoter.instances(:key => key_name).select { |i| i.state=='pending' || i.state=='running' }
         if list.any?
@@ -63,7 +69,7 @@ module Healing
       def install
         map.instances.each_in_thread "Uploading" do |instance|
           #it seems ssh here doesn't work if we use ~ in the path?
-          Healing::App::Base.run_locally "rsync -e 'ssh -i #{key_path} -o StrictHostKeyChecking=no' -ar /Users/emiltin/Desktop/healing/ root@#{instance.address}:/healing", :quiet => true
+          Healing::App::Base.run_locally "rsync -e 'ssh -i #{options.key} -o StrictHostKeyChecking=no' -ar /Users/emiltin/Desktop/healing/ root@#{instance.address}:/healing", :quiet => true
           #TODO how to handle ssh/rsync error messages?
         end
       end
@@ -78,11 +84,12 @@ module Healing
       end
 
       def show_instances
-        if map.instances.any?
+        list = map.instances.dup.select { |i| Cloud.clouds.find { |c| c.options.uuid==i.cloud_uuid } }
+        if list.any?
           puts_row ['instance','state','cloud','address']
           map.instances.each do |i|
-            c = Cloud.clouds.find { |c| c.uuid==i.cloud_uuid }
-            cloud_name = c ? "#{' '*c.depth}#{c.name}" : '-'
+            c = Cloud.clouds.find { |c| c.options.uuid==i.cloud_uuid }
+            cloud_name = c ? "#{' '*c.depth}#{c.options.name}" : '-'
             puts_row [i.id,i.state,cloud_name,i.address]
           end
         else

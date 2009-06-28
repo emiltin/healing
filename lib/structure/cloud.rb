@@ -4,43 +4,47 @@ module Healing
 
       class Lingo < Base::Lingo
         def cloud name, &block
-          Cloud.new( @parent, {:name=>name, :root => @parent.root}, &block)
+          Cloud.new( @target, {:name=>name, :root => @target.root}, &block)
         end
 
         def remoter p
-          raise "You can only specify one remoter!" if @parent.remoter
-          @parent.remoter = Healing::Remoter::Base.build p
+          raise "You can only specify one remoter!" if @target.options.remoter
+          @target.options.remoter = p
         end
 
         def image i
-          @parent.image = i
+          @target.options.image = i
         end
 
         def key path
-          @parent.key = path
+          @target.options.key = path
         end
 
         def uuid u
-          @parent.uuid = u.to_s
+          @target.options.uuid = u.to_s
         end
 
         def instance name, &block
-          Instance.new( @parent, {:name=>name, :root => @parent.root, :num_instances => 1}, &block)
+          Instance.new( @target, {:name=>name, :num_instances => 1}, &block)
         end
 
         def instances number
-          @parent.num_instances = number
+          @target.options.num_instances = number
         end
 
         def recipe file, options={}, &block
-          Recipe.new @parent, file, options, &block
+          if block
+            Recipe.new @target, options.merge(:name=>file), &block
+          else
+            Recipe.new @target, options.merge(:name=>file,:file=>file)
+          end
         end
-        
+
         #git_repo() will instantiate a Healing::Structure::GitRepo object, etc..
         def method_missing(sym, *args, &block)
      #     if match = sym.to_s.match(/^not_(.+)/)
     #        sym = match[1]
-          eval("Healing::Structure::#{sym.to_s.camelcase}").new @parent, *args, &block
+          eval("Healing::Structure::#{sym.to_s.camelcase}").new @target, *args, &block
         end
       end
       
@@ -87,11 +91,11 @@ module Healing
       end
 
       def my_instances
-        root.map.instances.select { |i| i.cloud_uuid==uuid }
+        root.map.instances.select { |i| i.cloud_uuid==options.uuid }
       end
 
       def find_cloud cloud_uuid
-        return self if cloud_uuid==uuid
+        return self if cloud_uuid==options.uuid
         @subclouds.each do |c| 
           r = c.find_cloud cloud_uuid
           return r if r
@@ -109,7 +113,7 @@ module Healing
       end
 
       def validate
-        raise "Cloud uuid not set in '#{name}'" unless uuid || !num_instances
+        raise "Cloud uuid not set in '#{name}'" unless options.uuid || !options.num_instances
       end
 
       def root?
@@ -121,24 +125,15 @@ module Healing
       end
 
       def image
-        root.image
+        root.options.image
       end
 
       def self.find_cloud_with_uuid uuid
-        @@clouds.find { |c| c.uuid==uuid }
-      end
-
-      def key= key
-        raise "Error in cloud '#{@name}': The key can only be set in the root cloud!" unless @depth==0
-        @key = key
+        @@clouds.find { |c| c.options.uuid==uuid }
       end
 
       def key_name
-        ::File.basename @key, ".*"
-      end
-
-      def key_path
-        @key
+        ::File.basename options.key, ".*"
       end
 
       def get_uuid
@@ -151,12 +146,12 @@ module Healing
       end
 
       def describe_name
-        puts_title :cloud, name
+        puts_title :cloud, options.name
       end
       
       def describe_settings
-        puts_setting :uuid, uuid if uuid
-        puts_setting :instances, num_instances if num_instances
+        puts_setting :uuid, options.uuid if options.uuid
+        puts_setting :instances, options.num_instances if options.num_instances
       end
 
       

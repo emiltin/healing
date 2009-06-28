@@ -2,17 +2,17 @@ module Healing
   module Structure
     class Link <  Resource
   
-      def initialize parent, source, destination, options={}
-        super parent, options.merge(:source => source, :destination => destination)
+      def initialize parent, source, destination, o={}
+        super parent, o.merge(:source => source, :destination => destination)
       end
   
       def heal
         describe_name
-        run "ln -s #{source} #{destination}"
+        run "ln -s #{options.source} #{options.destination}"
       end
     
       def describe_name
-        puts_title :link, ''
+        puts_title :link, "#{options.destination} --> #{options.source}"
       end
       
       def describe_settings

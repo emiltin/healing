@@ -17,5 +17,9 @@ module Healing
       end
     end
     
+    def to_hash
+      @options
+    end
+    
   end
 end

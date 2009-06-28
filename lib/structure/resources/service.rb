@@ -4,7 +4,7 @@ module Healing
     class Service < Resource
       
       class Stopped < Resource
-        class Lingo < Structure::Cloud::Lingo
+        class Lingo < Structure::Resource::Lingo
         end
         def describe_name
           puts_title :while_stopped, ''
@@ -14,7 +14,7 @@ module Healing
           super
         end
         def heal_resources
-          @parent.stop
+          @owner.stop
           super
           #the service will set it's state itself
         end
@@ -23,23 +23,23 @@ module Healing
       
       class Lingo < Resource::Lingo
         def on
-          @parent.state = :on
+          @owner.options.state = :on
         end
         
         def off
-          @parent.state = :off
+          @owner.options.state = :off
         end
         
         def while_stopped &block
-          Service::Stopped.new( @parent, {:root => @parent.root}, &block)
+          Service::Stopped.new( @owner, {}, &block)
         end
       end
   
-      def initialize parent, name, options={}, &block
+      def initialize parent, name, o={}, &block
         if name.is_a? Hash
-          super parent, options.merge(:name=>name.to_a.flatten[0], :state => name.to_a.flatten[1]), &block
+          super parent, o.merge(:name=>name.to_a.flatten[0], :state => name.to_a.flatten[1]), &block
         else
-          super parent, options.merge(:name=>name), &block
+          super parent, o.merge(:name=>name), &block
         end
       end
       
@@ -51,7 +51,7 @@ module Healing
         describe_name
         stop if stop_during_setup?
         heal_resources
-        case state
+        case options.state
           when :on
             start
     #      when :restart
@@ -63,19 +63,19 @@ module Healing
       
       def start
         #TODO method of starting services depend on platform..
-        run "sudo /etc/init.d/#{name} start"
+        run "sudo /etc/init.d/#{options.name} start"
       end
       
       def stop
-        run "sudo /etc/init.d/#{name} stop"
+        run "sudo /etc/init.d/#{options.name} stop"
       end
       
       def restart
-        run "sudo /etc/init.d/#{name} restart"
+        run "sudo /etc/init.d/#{options.name} restart"
       end
       
       def describe_name
-        puts_title :service, "#{name} (#{state})"
+        puts_title :service, "#{options.name} (#{options.state})"
       end
 
       def describe_settings

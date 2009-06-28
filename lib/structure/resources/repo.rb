@@ -12,11 +12,11 @@ module Healing
       end
       
       def describe_name
-        puts_title :repository, path
+        puts_title :repository, options.path
       end
       
       def describe_settings
-        puts_setting :url if url
+        puts_setting :url if options.url
       end
 
 

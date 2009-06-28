@@ -40,7 +40,7 @@ module Healing
       def execute command=nil
         @commands << command if command
         @commands.flatten!
-        ssh_options = { :keys => [@root.key_path], :auth_methods => 'publickey', :paranoid => false }
+        ssh_options = { :keys => [@root.options.key], :auth_methods => 'publickey', :paranoid => false }
         out = ''
         Net::SSH.start( address, 'root', ssh_options) do |ssh|  
           while command = @commands.shift do

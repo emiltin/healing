@@ -4,8 +4,7 @@ module Healing
 
       def initialize parent, path, options={}
         super parent, path, options
-
-        recipe do
+        lingo do
           package 'git-core'
         end
 
@@ -13,20 +12,20 @@ module Healing
 
       def heal
         super
-        run "git clone --depth 1 #{url} #{path}"
+        run "git clone --depth 1 #{options.url} #{options.path}"
         if user && group
-          run "chown #{user}:#{group} #{path} -R"
+          run "chown #{options.user}:#{options.group} #{options.path} -R"
         elsif user
-          run "chown #{user} #{path} -R"
+          run "chown #{options.user} #{options.path} -R"
         end
       end
       
       def describe_name
-        puts_title :git_repo, path
+        puts_title :git_repo, options.path
       end
       
       def describe_settings
-        puts_setting :url if url
+        puts_setting :url if options.url
       end
 
 

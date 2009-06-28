@@ -18,7 +18,7 @@ module Healing
         @armed = {}
         @root.clouds.each do |c|
           cur = c.my_instances.size   
-          balance = c.num_instances ? c.num_instances - cur : 0
+          balance = c.options.num_instances ? c.options.num_instances - cur : 0
           @armed[c] = balance if balance>0
         end
         return @armed.any?
@@ -29,7 +29,7 @@ module Healing
         total = @armed.values.inject { |v,m| v+m }
         puts "Launching #{total} instance(s)."
         @armed.each_pair do |cloud,num|
-          @launched.concat @root.remoter.launch(:num => num, :key => @root.key_name, :image => cloud.image, :cloud => cloud, :cloud_uuid => cloud.uuid)
+          @launched.concat @root.remoter.launch(:num => num, :key => @root.key_name, :image => cloud.options.image, :cloud => cloud, :cloud_uuid => cloud.options.uuid)
         end
         @root.map.add_instances @launched
         wait_for_instances

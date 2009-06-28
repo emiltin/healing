@@ -6,7 +6,7 @@ module Healing
         super parent, options.merge(:volume_id=>volume_id)
         
         the_parent = self
-        recipe do
+        lingo do
           volume volume_id
 
           package 'mysql-client'

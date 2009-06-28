@@ -5,7 +5,7 @@ require 'trollop'
 require File.dirname(__FILE__)+'/../lib/healing'
 
 
-commands = ['ideal','scan']
+commands = ['ideal','scan','terminate','heal']
 
 parser = nil
 opts = Trollop::options do
@@ -16,8 +16,9 @@ opts = Trollop::options do
   banner "\nHealing is a cloud configuration system."
 end
 
+cmd = ARGV[0]
 
-if ARGV.empty?
+unless cmd && commands.include?(cmd)
   puts "Usage:\n\theal <command> <options>\n\n"
   puts "Commands:"
   puts commands.map {|c| "\t#{c}\n" }

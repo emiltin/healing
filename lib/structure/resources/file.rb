@@ -12,33 +12,29 @@ module Healing
   
       def heal
         describe_name
-        if remove?
-          run "rm #{path}"
+       if options.remove?
+          run "rm #{options.path}"
         else
-          if @options[:source]
-            run "cp #{source} #{path}"
+          if options.source?
+            run "cp #{options.source} #{options.path}"
           else
-            run "echo '#{content}' > #{path}"
+            run "echo '#{options.content}' > #{options.path}"
           end  
-          run "chmod '#{mode}' #{path}" if @options[:mode]
+          run "chmod '#{options.mode}' #{options.path}" if options.mode?
         end
       end
     
-      def revert
-        log "reverting file '#{path}'"
-        run "rm #{path}"
-      end
  
       def describe_name
-        puts_title :file, path
+        puts_title :file, options.path
       end
       
       def describe_settings
-        if remove?
+        if options.remove?
           puts_setting :remove
         else
-          puts_setting :content if content
-          puts_setting :mode if mode
+          puts_setting :content if options.content
+          puts_setting :mode if options.mode
         end
       end
     

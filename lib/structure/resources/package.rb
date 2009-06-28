@@ -12,16 +12,16 @@ module Healing
       
       def heal
         describe_name
-        run "apt-get install -y #{name} "
+        run "apt-get install -y #{options.name} "
       end
 
       def revert
-        log "removing package #{name}"
-        run "apt-get remove -y #{name}"
+        log "removing package #{options.name}"
+        run "apt-get remove -y #{options.name}"
       end
 
       def describe_name
-        puts_title :package, name
+        puts_title :package, options.name
       end
 
     end

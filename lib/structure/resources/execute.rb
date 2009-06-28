@@ -2,18 +2,18 @@ module Healing
   module Structure
     class Execute < Resource
  
-      def initialize parent, name,command, options={}
+      def initialize parent, name, command, options={}
         super parent, options.merge(:name=>name, :command => command)
       end
 
       def heal
         describe_name
-        run command
+        run options.command
   #      self.instance_eval &@block if @block
       end
     
       def describe_name
-        puts_title :execute, "#{name}"
+        puts_title :execute, "#{options.name}"
       end
       
       def describe_settings

@@ -1,6 +1,7 @@
 #!/usr/bin/env ruby
 
-require 'lib/healing'
+require File.dirname(__FILE__)+'/../lib/healing'
 
-healer = Healing::App::Worker.new
-healer.heal
+h = Healing::App::Worker.new
+h.load_ideal 'ideal.rb'
+h.heal

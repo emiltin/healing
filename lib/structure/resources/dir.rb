@@ -12,25 +12,20 @@ module Healing
 
       def heal
         describe_name
-        if source
-          run "cp -R #{source} #{path}"
+        if options.source
+          run "cp -R #{options.source} #{options.path}"
         else
-          run "mkdir -p #{path}"
+          run "mkdir -p #{options.path}"
         end  
-        run "chmod '#{mode}' #{path}" if mode
+        run "chmod '#{options.mode}' #{options.path}" if options.mode
       end
 
-      def revert
-        @cloud.log "reverting dir '#{path}'"
-        #      run "rm -rf #{path}"
-      end
-      
       def describe_name
-        puts_title :dir, path
+        puts_title :dir, options.path
       end
       
       def describe_settings
-        puts_setting :mode if mode
+        puts_setting :mode if options.mode
       end
 
 

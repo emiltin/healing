@@ -18,8 +18,8 @@ module Healing
         end
       end
 
-      def initialize parent, name, options={}
-        super parent, options.merge(:name => name)
+      def initialize parent, name, o={}
+        super parent, o.merge(:name => name)
         include_dependencies
       end
       
@@ -28,25 +28,27 @@ module Healing
       end
       
       def include_dependencies
-        packs = @@dependencies[name]
-        recipe do
-          packs.each { |pack| package pack } if packs
+        packs = @@dependencies[options.name]
+        if packs
+          lingo do
+            packs.each { |pack| package pack }
+          end
         end
       end
       
       def heal
         heal_resources
         describe_name
-        run "gem install --no-rdoc --no-ri #{name} "
+        run "gem install --no-rdoc --no-ri #{options.name} "
       end
 
       def revert
-        log "removing gem #{name}"
-        run "gem uninstall #{name}"
+        log "removing gem #{options.name}"
+        run "gem uninstall #{options.name}"
       end
 
       def describe_name
-        puts_title :gem, name
+        puts_title :gem, options.name
       end
 
     end

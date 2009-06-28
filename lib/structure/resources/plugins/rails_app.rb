@@ -2,14 +2,15 @@ module Healing
   module Structure
     class RailsApp < Resource
 
-      def initialize parent, name, options
-        super parent, options.merge(:name => name)
+      def initialize parent, name, o
+        super parent, o.merge(:name => name)
         
-        recipe @options do        #pass in @options so we can access them in the lingo block
+        lingo self, options.to_hash do        #pass on options to the lingo block
           recipe 'passenger', :version => '2.2.3'
-          git_repo "/#{@options.name}", :url => @options.repo, :user => 'www-data', :group => 'www-data'
+          p self.class.name
+          git_repo "/#{options.name}", :url => options.repo, :user => 'www-data', :group => 'www-data'
           
-          the_options = @options
+          the_options = options
 
           service 'apache2' do
             while_stopped do
@@ -42,7 +43,7 @@ EOF
       end
       
       def describe_name
-        puts_title :rails_app, name
+        puts_title :rails_app, options.name
       end
       
       def describe_settings

@@ -186,3 +186,10 @@ puzzle metaphor: it's easy to describe the end state, but without hints to the p
 
 
 it's impractical that the structure is intialized the same way during bin/ideal and bin/heal, since this mean the execution is inflexible, and can't depend on runtime information. for example, the passenger recipe needs a reference to the currently intalled version of the passenger gem, which needs to be determined at runtime. and the entire recipe is currently evaluated at runtime, but also at bin/ideal time. so if we insert code in the recipe it will also be run on the host during bin/ideal.
+
+i would like to be able to run code that modifies the structure, during the healing process. this probably means that the structure shouldn't be initialized until the healing starts. 
+is this possible now?
+
+
+each structure element have a machting lingo. the structure have a parallel 'lingo-structure' that can be traversed. the only problem is that when creating new elements, the parent is not found in the lingo that responds, but in the first lingo in the lingo chain.
+
