@@ -39,7 +39,8 @@ module Healing
       def heal
         describe_name
         heal_resources
-        run "gem install --no-rdoc --no-ri #{options.name} "
+        version = "-v #{options.version}" if options.version
+        run "gem install --no-rdoc --no-ri #{version} #{options.name}"
       end
 
       def revert

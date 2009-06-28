@@ -6,15 +6,18 @@ module Healing
       class Stopped < Resource
         class Lingo < Structure::Resource::Lingo
         end
+        
         def describe_name
           puts_title :while_stopped, ''
         end
+        
         def heal
           describe_name
           super
         end
+        
         def heal_resources
-          @owner.stop
+          @parent.stop
           super
           #the service will set it's state itself
         end
@@ -49,7 +52,7 @@ module Healing
       
       def heal
         describe_name
-        stop if stop_during_setup?
+        stop if options.stop_during_setup?
         heal_resources
         case options.state
           when :on

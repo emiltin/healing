@@ -6,7 +6,7 @@ module Healing
         super parent, o.merge(:name => name)
         
         lingo self, options.to_hash do        #pass on options to the lingo block
-          recipe 'passenger', :version => '2.2.3'
+          recipe 'passenger', :version => '2.2.4'
           git_repo "/#{options.name}", :url => options.repo, :user => 'www-data', :group => 'www-data'
           
           the_options = options

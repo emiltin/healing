@@ -53,7 +53,7 @@ module Healing
             raise "Can't attach volume to cloud without instances!" if instances.empty?
             raise "Can't attach volume to more that one instance!" if instances.size>1
             i = instances.first
-            cloud.volumes.each { |v| volumes << {:volume_id => v.vol_id, :instance_id => i.id, :device => v.device} }
+            cloud.volumes.each { |v| volumes << {:volume_id => v.options.vol_id, :instance_id => i.id, :device => v.options.device} }
           end
         end
         volumes
