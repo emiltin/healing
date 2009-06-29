@@ -19,11 +19,7 @@ module Healing
       def build_remoter
         @remoter = Healing::Remoter::Base.build options.remoter
       end
-      
-      def defaults
-        { :image => 'ami-bf5eb9d6', :remoter => :ec2 }
-      end
-      
+            
       def compile
         super
       end

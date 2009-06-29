@@ -3,8 +3,12 @@ module Healing
     class Cloud < Base
 
       class Lingo < Base::Lingo
-        def cloud name, &block
-          Cloud.new( @target, {:name=>name, :root => @target.root}, &block)
+        def cloud name, options={}, &block
+          Cloud.new( @target, options.merge(:name=>name), &block)
+        end
+
+        def instance name, options={},&block
+          Instance.new( @target, options.merge(:name=>name, :num_instances => 1), &block)
         end
 
         def remoter p
@@ -22,10 +26,6 @@ module Healing
 
         def uuid u
           @target.options.uuid = u.to_s
-        end
-
-        def instance name, &block
-          Instance.new( @target, {:name=>name, :num_instances => 1}, &block)
         end
 
         def instances number
@@ -70,6 +70,10 @@ module Healing
         Cloud.clouds << self 
       end
       
+      def defaults
+        { :image => 'ami-bf5eb9d6', :remoter => :ec2 }
+      end
+
       def compile
         @gems = parent_cloud ? parent_cloud.gems.dup : []
         @packages = parent_cloud ? parent_cloud.packages.dup : []
@@ -198,7 +202,7 @@ end
 
 
 
-def cloud name, &block
-  Healing::Structure::Root.new( {:name=>name}, &block )
+def cloud name, options={}, &block
+  Healing::Structure::Root.new( options.merge(:name=>name), &block )
 end
 

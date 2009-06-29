@@ -98,7 +98,7 @@ module Healing
       end
 
       def log str, level=0
-        puts '.  '*(@depth+level) + str
+        puts '. '*(@depth+level) + str
       end
 
       def puts_title k,v
@@ -112,7 +112,7 @@ module Healing
           v = v.to_s.strip.split("\n")[0]
           v = "#{v[0..max]}..." if v && v.size > max
         end
-        log " #{k}: #{v}", 1
+        log "#{k}: #{v}", 1
       end
 
       def order

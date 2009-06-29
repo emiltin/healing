@@ -3,7 +3,7 @@ module Healing
     class Instance < Cloud
 
       def describe_name
-        log "instance: #{@name}"
+        puts_title :instance, options.name
       end
       
     end
