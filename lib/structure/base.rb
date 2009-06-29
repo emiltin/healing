@@ -93,8 +93,8 @@ module Healing
       def revert
       end
 
-      def run cmd
-        Healing::App::Base.run_locally cmd
+      def run cmd, options={}
+        Healing::App::Base.run_locally cmd, options
       end
 
       def log str, level=0

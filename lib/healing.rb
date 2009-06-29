@@ -21,6 +21,7 @@ module Healing
   require BASE+'/lib/structure/resources/dir'
   require BASE+'/lib/structure/resources/package'
   require BASE+'/lib/structure/resources/service'
+  require BASE+'/lib/structure/resources/rake'
   require BASE+'/lib/structure/resources/rubygem'
   require BASE+'/lib/structure/resources/execute'
   require BASE+'/lib/structure/resources/repo'

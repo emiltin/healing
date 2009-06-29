@@ -193,3 +193,28 @@ is this possible now?
 
 each structure element have a machting lingo. the structure have a parallel 'lingo-structure' that can be traversed. the only problem is that when creating new elements, the parent is not found in the lingo that responds, but in the first lingo in the lingo chain.
 
+.............
+
+alright. things seems to work well again after some restucturing. new lingo chain seems to work very well, i can nest clouds, instances, recipes, run blocks, plugins, etc. i can use lingo and recipes in classes. very cool!
+
+what's next? 
+- upload healing lib and user files separately
+- handle uploading of user files: ideals, recipes, plugins, templates...
+- running of specific ideal file on instances
+- improve git_repo to handle code updates, branches, etc
+- rename cloud uuid to cloud ref?
+- better handling of keys
+- better error/exception handling
+- improve mysql_ebs backup of original mysql folder on the system volume.
+- support running rake task on instances
+
+
+
+ssh call chain:
+
+ruby
+net::ssh				is a pure ruby implementation, that constructs ssh commands and sends them
+ssh						now we're at the instance
+bash					$_ = ]     $_ = hBc
+ruby
+backticks				here both $_ and $_ are empty, and PATH is wrong

@@ -199,10 +199,3 @@ module Healing
     end
   end
 end
-
-
-
-def cloud name, options={}, &block
-  Healing::Structure::Root.new( options.merge(:name=>name), &block )
-end
-

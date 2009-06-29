@@ -80,11 +80,14 @@ module Healing
       end
 
       def show_instances
-        list = map.instances.dup.select { |i| Cloud.clouds.find { |c| c.options.uuid==i.cloud_uuid } }
+        list = map.instances.map { |i| [i,Cloud.clouds.find { |c| c.options.uuid==i.cloud_uuid }] }
+        list.reject! {|p| p[1]==nil }
         if list.any?
           puts_row ['instance','state','cloud','address']
-          map.instances.each do |i|
-            c = Cloud.clouds.find { |c| c.options.uuid==i.cloud_uuid }
+          list.sort! { |a,b| a[1].depth<=>b[1].depth }
+          list.each do |pair|
+            i = pair[0]
+            c = pair[1]
             cloud_name = c ? "#{' '*c.depth}#{c.options.name}" : '-'
             puts_row [i.id,i.state,cloud_name,i.address]
           end
@@ -122,3 +125,9 @@ module Healing
     end
   end
 end
+
+
+def cloud name, options={}, &block
+  Healing::Structure::Root.new( options.merge(:name=>name), &block )
+end
+

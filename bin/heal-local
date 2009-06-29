@@ -2,6 +2,11 @@
 
 require File.dirname(__FILE__)+'/../lib/healing'
 
+#FIXME this is a workaround, since /etc/profile is not loaded when we go through Net::SSH, for some reason,
+#not are any of the other bash config files.....
+ENV['PATH'] = "#{ENV['PATH']}:/var/lib/gems/1.8/bin"
+
+
 h = Healing::App::Worker.new
 h.load_ideal 'ideal.rb'
 h.heal
