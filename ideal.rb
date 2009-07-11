@@ -1,13 +1,22 @@
 
-cloud :raking do
-  uuid '68u2hcjcdjj3'
+cloud :dev do
+  uuid 'hjujj3j'
   key '/Users/emiltin/.ec2/testpair'
-  instances 1
   
-#  mysql_ebs 'vol-4943a020'
-#  rails_app '/poolparty_example', :repo => 'git://github.com/emiltin/poolparty_example.git', :environment => :production
-#  rubygem 'rake'
-  rake "stats", :base => '/poolparty_example'
-  rake "log:clear", :base => '/poolparty_example'
+  dir '/xx'
+
+  cloud :app do
+    instances 10
+    uuid '3jfjfkj3kr'
+    dir '/xx/app'
+  end
+  
+  cloud :db do
+    uuid 'dlfkjl3rddd3333'
+    instances 1
+    dir '/xx/db'
+  end
+
 end
+
 

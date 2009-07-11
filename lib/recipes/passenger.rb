@@ -3,16 +3,24 @@
 rubygem 'rails'
 rubygem 'passenger', :version => @options.version
 
+base = "/var/lib/gems/1.8/gems/passenger-#{@options.version}"
 
-#TODO we need some way of determining if it has already been run
-execute 'passenger-install-apache2-module', 'echo -en "\n\n\n\n" | /var/lib/gems/1.8/bin/passenger-install-apache2-module'
+run 'build passenger apache module', :description => "run passenger install scripts unless already build" do
+  if ::File.exists? "#{base}/ext/apache2/mod_passenger.so"
+    puts "Module already build."
+  else
+    run_recipe do
+      execute 'passenger-install-apache2-module', 'echo -en "\n\n\n\n" | /var/lib/gems/1.8/bin/passenger-install-apache2-module'
+    end
+  end
+end
 
 
 #TODO
 #me might be able to use a run block, to determine the latest version of passenger?
 
 file '/etc/apache2/httpd.conf', :content => <<-EOF
-LoadModule passenger_module /var/lib/gems/1.8/gems/passenger-#{@options.version}/ext/apache2/mod_passenger.so
-PassengerRoot /var/lib/gems/1.8/gems/passenger-#{@options.version}
+LoadModule passenger_module #{base}/ext/apache2/mod_passenger.so
+PassengerRoot #{base}
 PassengerRuby /usr/bin/ruby1.8
 EOF

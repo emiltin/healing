@@ -5,6 +5,7 @@ module Healing
     
       def initialize
         load_cloud_uuid
+        Healing::Structure::Rubygem.scan_gems
         super
       end
 
@@ -27,9 +28,17 @@ module Healing
       end
   
       def heal
+        puts '------------------------------------------------------------'
         puts "Healing '#{@cloud.options.name}' instance..."
         @cloud.heal_from_root
-        puts "Done."
+        @cloud.root.report
+      end
+
+      def diagnose
+        puts '------------------------------------------------------------'
+        puts "Diagnosing '#{@cloud.options.name}' instance..."
+        @cloud.diagnose_from_root
+        @cloud.root.report
       end
     end
   end

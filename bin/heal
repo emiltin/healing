@@ -4,8 +4,12 @@ require 'rubygems'
 require 'trollop'
 require File.dirname(__FILE__)+'/../lib/healing'
 
+commands = 'ideal scan terminate heal volumes upload diagnose prune'.split
 
-commands = ['ideal','scan','terminate','heal']
+matches = commands.select { |c| c.match /^#{ARGV[0]}/ }
+if matches.size==1
+  ARGV[0] = matches.first
+end
 
 parser = nil
 opts = Trollop::options do
@@ -16,6 +20,13 @@ opts = Trollop::options do
   banner "\nHealing is a cloud configuration system."
 end
 
+
+if matches.size>1
+  puts "Which command? #{matches.join(', ')}"
+  exit
+end
+  
+  
 cmd = ARGV[0]
 
 unless cmd && commands.include?(cmd)
@@ -25,19 +36,7 @@ unless cmd && commands.include?(cmd)
   exit
 end
 
+#run subcommand:
 cmd = ARGV.shift
 path = Healing::BASE+'/bin/heal-'+cmd
-load path   #run subcommand
-
-
-
-#require 'healing'
-
-#h = Healing::App::Admin.new
-#h.describe
-
-#require 'lib/healing'
-#require 'lib/app/admin'
-
-#h = Healing::App::Admin.new
-#h.heal
+load path

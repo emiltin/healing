@@ -1,3 +1,5 @@
+require 'digest/sha1'
+
 module Healing
   module Structure
     class Base
@@ -28,12 +30,13 @@ module Healing
         
       end
 
-      attr_accessor :resources, :parent, :root, :depth, :options
+      attr_accessor :resources, :parent, :root, :depth, :options, :index
 
       def initialize parent, options={}, &block
         @resources = []
         @parent = parent
         @root = parent.root if parent
+        @index = @root.new_index
         @options = Options.new defaults.merge(options)
         @depth = @parent ? @parent.depth+1 : 0
         eval_block &block
@@ -70,8 +73,8 @@ module Healing
       end
       
       def cloud_path
-        path = [self]
-        path.unshift path.first.parent while path.first.parent
+        path = [nearest_cloud]
+        path.unshift path.first.parent_cloud while path.first.parent_cloud
         path
       end
 
@@ -81,18 +84,115 @@ module Healing
 
       def validate
       end
+      
+      def healed?
+        false
+      end
+      
+      def subs_healed?
+        @resources.all? { |r| r.healed? }
+      end
+      
+
+      def extract str, len=60
+        max = (len-7)*0.5
+        if str.size<=len
+          s = str
+        else
+          s = str.strip
+          first = s.split("\n").first.strip
+          last = s.split("\n").last.strip
+          s = "#{first[0..max]} [...] #{last[-max..-1]}"
+        end
+        s.strip.gsub(/\n/,';')
+      end
+      
+      def heal_and_report
+        row = root.reporter.add_row self, :fingerprint => "#{hexdigest}", 
+        :item=> "#{'. '*@depth}#{ref}"
+        begin
+          result = heal
+          case result
+          when String
+            row.columns[:status] = :ok
+            row.columns[:message] = extract(result)
+          when Hash
+            pair = result.first
+            row.columns[:status] = result.keys.first
+            row.columns[:message] = extract(result.values.first)
+          else
+            row.columns[:status] = result==false ? :fail : :ok
+          end
+        rescue Exception => e
+          row.columns[:status] = :fail
+          row.columns[:message] = extract(e.to_s)
+        end
+      end
 
       def heal
         heal_resources
       end
       
-      def heal_resources
-        @resources.each { |c| c.heal }
+      def cloud_path_string
+        cloud_path.map { |c| c.options.name }.join('/')
       end
       
-      def revert
+      def heal_resources
+        @resources.each { |c| c.heal_and_report }
       end
-
+      
+      def hexdigest
+        s = ref_path
+        s += options.to_hash.map { |k,v| "#{k}:#{v}" }.join(',')
+        Digest::SHA1.hexdigest(s)
+      end
+      
+      def ref_path
+        @parent ? "#{@parent.ref_path},#{ref}" : ref
+      end
+      
+      def ref
+        "#{format_name.to_s}: #{format_title.to_s}"
+      end
+      
+      def format_name
+        self.class.name.gsub(/.*::/,'')
+      end
+      
+      def format_title
+      end
+      
+      def diagnose_and_report
+        row = root.reporter.add_row self, :fingerprint => "#{hexdigest}", 
+        :item=> "#{'. '*@depth}#{ref}"
+        begin
+          result = diagnose
+          case result
+          when String
+            row.columns[:status] = :fail
+            row.columns[:message] = extract(result)
+          when Hash
+            pair = result.first
+            row.columns[:status] = result.keys.first
+            row.columns[:message] = extract(result.values.first)
+          else
+            row.columns[:status] = result ? :ok : :fail
+          end
+        rescue Exception => e
+          row.columns[:status] = :fail
+          row.columns[:message] = extract(e.to_s)
+        end
+        diagnose_resources
+      end
+      
+      def diagnose
+        healed?
+      end
+      
+      def diagnose_resources
+        @resources.each { |c| c.diagnose_and_report }
+      end
+      
       def run cmd, options={}
         Healing::App::Base.run_locally cmd, options
       end
@@ -112,7 +212,7 @@ module Healing
           v = v.to_s.strip.split("\n")[0]
           v = "#{v[0..max]}..." if v && v.size > max
         end
-        log "#{k}: #{v}", 1
+     #   log "#{k}: #{v}", 1
       end
 
       def order

@@ -11,11 +11,11 @@ module Healing
 
           package 'mysql-client'
           package 'mysql-server'
-
+          
           service 'mysql' do
             while_stopped do
               execute 'backup /etc/mysql', "mv /etc/mysql /etc/mysql_backup"
-              link '/vol/etc/mysql', '/etc/mysql' 
+              link '/etc/mysql', '/vol/etc/mysql'
             end
           end
           

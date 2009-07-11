@@ -12,7 +12,7 @@ module Healing
           err = stderr.read
           unless options[:quiet]
             puts out unless out=='' 
-            puts "stderr: #{err}" unless err==''
+            puts "*** ERROR ***: #{err}" unless err==''
           end
           return out
         end

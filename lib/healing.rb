@@ -1,11 +1,18 @@
 module Healing
   BASE = File.dirname( File.dirname(__FILE__) )
   
-  Dir.glob(BASE+'/lib/utilities/*.rb') { |file| require file }     
+  #note: the order of the requires below is significant to avoid load errors
+
+  require 'fileutils'
+
+  require BASE+'/lib/utilities/options.rb'
+  require BASE+'/lib/utilities/table.rb'
+  require BASE+'/lib/utilities/reporter.rb'
+  require BASE+'/lib/utilities/threading.rb'
+
   Dir.glob(BASE+'/lib/core/*.rb') { |file| require file }     
 
 
-  #note: the order of the requires below is significant to avoid load errors
 
   require BASE+'/lib/structure/base.rb'
   require BASE+'/lib/structure/resources/resource'

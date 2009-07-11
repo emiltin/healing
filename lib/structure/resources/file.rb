@@ -1,32 +1,40 @@
 module Healing
   module Structure
-    class File <  Resource
+    class File < Resource
   
       def initialize parent, path, options={}
         super parent, options.merge(:path => path)
       end
   
       def defaults
-        { :mode => '0777' }
+        { :mode => 0777 }
       end
-  
+
+      def healed?
+        return false unless ::File.file?(options.path)
+        f = ::File.new options.path
+        return false if options.mode? && ((f.stat.mode & 0777) != options.mode)    #only compare lower tre octal digits
+        return false if options.content? && (::File.read(options.path) != options.content)
+        true
+      end
+      
       def heal
-        describe_name
-       if options.remove?
-          run "rm #{options.path}"
+        if options.remove?
+          FileUtils.rm options.path if ::File.exists? options.path
         else
-          if options.source?
-            run "cp #{options.source} #{options.path}"
-          else
-            run "echo '#{options.content}' > #{options.path}"
-          end  
-          run "chmod '#{options.mode}' #{options.path}" if options.mode?
+          ::File.open(options.path,'w') {|f| f.write options.content }
+          FileUtils.chmod options.mode, options.path if options.mode
         end
       end
-    
  
+      def format_title
+        options.path
+      end
+
       def describe_name
-        puts_title :file, options.path
+        s = options.path
+        s += " (remove)" if options.remove?
+        puts_title :file, s
       end
       
       def describe_settings

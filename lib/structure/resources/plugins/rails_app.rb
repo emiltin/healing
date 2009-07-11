@@ -62,7 +62,7 @@ EOF
       
       def describe_settings
         puts_setting :repo
-        puts_setting :env
+        puts_setting :environment
       end
 
 

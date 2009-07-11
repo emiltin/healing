@@ -7,6 +7,10 @@ module Healing
         @block = block
       end
       
+      def format_title
+        options.name
+      end
+      
       def describe_name
         puts_title :run, options.name
       end

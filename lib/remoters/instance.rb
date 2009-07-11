@@ -3,7 +3,7 @@ module Healing
   module Remoter
     class Instance
 
-      attr_accessor :cloud_uuid, :address, :cloud, :id, :key, :state, :commands
+      attr_accessor :cloud_uuid, :address, :cloud, :id, :key, :state, :commands, :output
 
       def initialize info
         @id = info[:id]
@@ -14,8 +14,9 @@ module Healing
         @cloud = info[:cloud]
         @root = info[:root] || (@cloud ? @cloud.root : nil)
         @commands = []
+        @output = ''
       end
-
+      
       def update_from i
         if i
           @address = i.address
@@ -47,6 +48,7 @@ module Healing
             log command, :cmd
             ssh.exec!(command) do |ch, stream, data|
               out << data
+              @output += data
               log data
             end
           end
@@ -71,12 +73,12 @@ module Healing
       end
 
       def log str, ch = :out
-        head = {:cmd => ">> [#{Time.now}] ", :err => "ERROR: " }
+        head = {:cmd => "> ", :err => "ERROR: " }
         tail = {:cmd => "\n" }
         ::File.open( "log/#{address}.log", 'a' ) { |f| f.write "#{head[ch]}#{str}#{tail[ch]}" }
       end
 
     end
-
+    
   end
 end

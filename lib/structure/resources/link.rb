@@ -2,22 +2,32 @@ module Healing
   module Structure
     class Link <  Resource
   
-      def initialize parent, source, destination, o={}
-        super parent, o.merge(:source => source, :destination => destination)
+      def initialize parent, path, target, o={}
+        super parent, o.merge(:path => path, :target => target)
       end
   
+      def healed?
+        return ::File.exist?(options.path) && ::File.symlink?(options.path)
+      end
+      
       def heal
         describe_name
-        run "ln -s #{options.source} #{options.destination}"
+        FileUtils.ln_s options.target, options.path
+#        run "ln -s #{options.path} #{options.target}"
       end
+      
+      def format_title
+        "#{options.path} --> #{options.target}"
+      end
+      
     
       def describe_name
-        puts_title :link, "#{options.destination} --> #{options.source}"
+        puts_title :link, format_title
       end
       
       def describe_settings
-        puts_setting :source
-        puts_setting :destination
+        puts_setting :path
+        puts_setting :target
       end
     
     end

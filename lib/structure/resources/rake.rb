@@ -6,10 +6,14 @@ module Healing
       
       def initialize parent, task, o={}
         super parent, o.merge(:task => task)
+        lingo do
+          rubygem 'rake'
+        end
       end
 
       def heal
         describe_name
+        heal_resources
         r = "rake #{options.flags} #{options.task}"
         if options.base?
           wd = run "pwd", :quiet => true

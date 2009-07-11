@@ -2,17 +2,35 @@ module Healing
   module Structure
     class Volume < Resource
       
-      def initialize parent, vol_id, o={:device => '/dev/sdh'}
+      def initialize parent, vol_id, o={}
         super parent, o.merge(:vol_id=>vol_id)
         nearest_cloud.volumes << self
-        lingo self, :device => options.device do
+        lingo self do
           package 'xfsprogs'
-          execute 'add device', "mkfs.xfs #{options.device}"
-          execute 'add volume to filetab', "echo \"#{options.device} /vol xfs noatime 0 0\" >> /etc/fstab"
-          execute 'mount EBS volume', 'mkdir /vol && mount /vol'
         end
       end
-   
+      
+      def healed?
+        ::File.exists? '/vol'
+      end
+      
+      def heal
+        if healed?
+          "Already mounted."
+        else
+          run "echo \"#{options.device} /vol xfs noatime 0 0\" >> /etc/fstab"
+          run 'mkdir /vol && mount /vol'
+        end        
+      end
+      
+      def defaults
+        { :device => '/dev/sdh' }
+      end
+      
+      def format_title
+        options.vol_id
+      end
+      
       def describe_name
         puts_title :volume, options.vol_id
       end

@@ -71,7 +71,7 @@ module Healing
       end
       
       def defaults
-        { :image => 'ami-bf5eb9d6', :remoter => :ec2 }
+        { :image => 'ami-bf5eb9d6', :remoter => :ec2, :num_instances => 0 }
       end
 
       def compile
@@ -110,9 +110,9 @@ module Healing
       def prune
         pruning = []
         cur = my_instances
-        n = cur.size - num_instances
+        n = cur.size - options.num_instances
         n.times { pruning << cur.shift } if n>0   #pick instances to terminate
-        @subclouds.each { |c| pruning.concat c.prune }
+        @subclouds.each { |c| pruning.concat [c.prune].flatten.compact }
         pruning
       end
 
@@ -131,7 +131,11 @@ module Healing
       def image
         root.options.image
       end
-
+      
+      def reporter
+        root.reporter
+      end
+      
       def self.find_cloud_with_uuid uuid
         @@clouds.find { |c| c.options.uuid==uuid }
       end
@@ -157,17 +161,21 @@ module Healing
         puts_setting :uuid, options.uuid if options.uuid
         puts_setting :instances, options.num_instances if options.num_instances
       end
-
-      
+    
       def heal_from_root
-        cloud_path.each do |element|
-          element.heal
+        cloud_path.each do |c|
+          c.heal_and_report
         end
       end
 
-      def heal
-        describe_name
-        super
+      def diagnose_from_root
+        cloud_path.each do |c|
+          c.diagnose_and_report
+        end
+      end
+      
+      def healed?
+        true
       end
 
       def order
@@ -194,6 +202,14 @@ module Healing
             @collection.unshift i
           end
         end
+      end
+
+      def format_name
+        'Cloud'
+      end
+      
+      def format_title
+        options.name
       end
       
     end

@@ -20,6 +20,10 @@ module Healing
         run "apt-get remove -y #{options.name}"
       end
 
+      def format_title
+        options.name
+      end
+      
       def describe_name
         puts_title :package, options.name
       end

@@ -2,22 +2,38 @@ module Healing
   module Structure
     class Dir < Resource
 
-      def initialize parent, path, options={}
-        super parent, options.merge(:path => path)
+      def initialize parent, path, o={}
+        super parent, o.merge(:path => path)
       end
 
       def defaults
-        { :mode => '0777' }
+        { :mode => 0777 }
+      end
+      
+      def healed?
+        return false unless ::File.exists?(options.path) && ::File.directory?(options.path)
+        return true unless options.mode?
+        (::File.stat(options.path).mode & 0777) == options.mode    #only compare lower tre octal digits
       end
 
+      def diagnose
+        return "Directory needs to be created" unless ::File.exists?(options.path) && ::File.directory?(options.path)
+        return "Mode needs to be adjusted" if options.mode? && ((::File.stat(options.path).mode & 0777) != options.mode)   #only compare lower tre octal digits
+      end
+      
       def heal
-        describe_name
-        if options.source
-          run "cp -R #{options.source} #{options.path}"
+        FileUtils.makedirs options.path unless ::File.exists? options.path
+        FileUtils.chmod options.mode, options.path if options.mode
+        
+        if rand(100)>50
+          rand(4).to_s*10
         else
-          run "mkdir -p #{options.path}"
-        end  
-        run "chmod '#{options.mode}' #{options.path}" if options.mode
+          raise "BAD"
+        end
+      end
+      
+      def format_title
+        options.path
       end
 
       def describe_name

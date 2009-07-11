@@ -3,7 +3,7 @@ module Healing
 
     class Service < Resource
       
-      class Stopped < Resource
+      class WhileStopped < Resource
         class Lingo < Structure::Resource::Lingo
         end
         
@@ -11,15 +11,14 @@ module Healing
           puts_title :while_stopped, ''
         end
         
-        def heal
-          describe_name
-          super
-        end
-        
         def heal_resources
-          @parent.stop
-          super
-          #the service will set it's state itself
+          unless subs_healed?
+            describe_name
+            @parent.stop
+            #the service will set it's state itself
+          else
+            "Stop not needed."
+          end
         end
         
       end
@@ -34,7 +33,7 @@ module Healing
         end
         
         def while_stopped &block
-          Service::Stopped.new( @owner, {}, &block)
+          Service::WhileStopped.new( @owner, {}, &block)
         end
       end
   
@@ -52,7 +51,7 @@ module Healing
       
       def heal
         describe_name
-        stop if options.stop_during_setup?
+#        stop if options.stop_during_setup?
         heal_resources
         case options.state
           when :on
@@ -66,19 +65,25 @@ module Healing
       
       def start
         #TODO method of starting services depend on platform..
-        run "sudo /etc/init.d/#{options.name} start"
+        run "/etc/init.d/#{options.name} start"
+        #unfortunately, the output is varies with the services, so no easy way to parse it
+#        status = run "/etc/init.d/#{options.name} status", :quiet => true
+#       if status.match /is stopped/      #only works with mysql, not with apache.. etc...
       end
       
       def stop
-        run "sudo /etc/init.d/#{options.name} stop"
+        run "/etc/init.d/#{options.name} stop"
       end
       
       def restart
-        run "sudo /etc/init.d/#{options.name} restart"
+        run "/etc/init.d/#{options.name} restart"
       end
       
-      def describe_name
-        puts_title :service, "#{options.name} (#{options.state})"
+      def format_title
+        "#{options.name}: #{options.state}"
+      end
+            def describe_name
+        puts_title :service, format_title
       end
 
       def describe_settings

@@ -4,6 +4,7 @@ module Healing
     class Admin < Base
   
       def describe
+  #      Healing::Structure::Rubygem.scan_gems
         @cloud.describe :recurse => true
       end
   
@@ -22,6 +23,12 @@ module Healing
   
       def heal
         @cloud.heal_remote
+        @cloud.report_remote
+      end
+
+      def diagnose
+        @cloud.diagnose_remote
+        @cloud.report_remote
       end
 
       def prune

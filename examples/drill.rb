@@ -8,6 +8,7 @@ cloud :drill do
   
   #core
   dir '/test'
+  dir '/test2', :mode => 0777     #remember to use octal (leading zero) for modes!
   file '/test/file', :content => 'once upon a time'
   line_in_file '/test/file', :content => 'fairies = 7'
   link '/test/file', '/test/fairies'

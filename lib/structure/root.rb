@@ -4,26 +4,49 @@ module Healing
 
       include Healing::Threading
 
-      attr_accessor :remoter, :map, :armed, :clouds
+      attr_accessor :remoter, :map, :armed, :clouds, :reporter, :remote_reporter
       
       def initialize o, &block
         raise "You can only define one root cloud!" if Cloud.root
         Cloud.root = self
         @clouds = []
         @root = self
+        @index_count = 0
         super  nil, o, &block
         @map = Remoter::Map.new self
         build_remoter
+        
+        @reporter = Reporter.new( Reporter::Column.new(:status),
+                                  Reporter::Column.new(:item),
+                                  Reporter::Column.new(:message),
+                                  Reporter::Column.new(:fingerprint))
+
+        @remote_reporter = Reporter.new( Reporter::Column.new(:ok),
+                                         Reporter::Column.new(:fail),
+                                         Reporter::Column.new(:item),
+                                         Reporter::Column.new(:message))
+                                                                
       end  
+      
+      def new_index
+        i = @index_count
+        @index_count += 1
+        i
+      end
+      
+      def report
+        puts @reporter.to_s
+      end
+
+      def report_remote
+        @map.instances.each { |i| @remote_reporter.parse i.output }
+        puts @remote_reporter.to_s
+      end
       
       def build_remoter
         @remoter = Healing::Remoter::Base.build options.remoter
       end
             
-      def compile
-        super
-      end
-
       def preflight_root
         @clouds.each do |c|
           c.preflight
@@ -70,15 +93,6 @@ module Healing
         end
       end
             
-      def heal_remote
-        App::Provisioner.new(self).heal
-        install
-        map.instances.each_in_thread "Healing #{map.instances.size} instance(s)" do |i|
-          i.execute("cd /healing && bin/heal-local")
-        end
-        puts "Ahh!"
-      end
-
       def show_instances
         list = map.instances.map { |i| [i,Cloud.clouds.find { |c| c.options.uuid==i.cloud_uuid }] }
         list.reject! {|p| p[1]==nil }
@@ -110,17 +124,33 @@ module Healing
       end
 
       def prune
-        pruning = []
         pruning = super
         if pruning.any?
           puts "Pruning #{pruning.size} instance(s)."
           remoter.terminate pruning
-          map.remove_instances -= pruning        
+          map.remove_instances pruning        
         else
           #      puts "No pruning needed."
         end
       end
       
+      def heal_remote
+        App::Provisioner.new(self).heal
+        install
+        map.instances.each_in_thread "Healing #{map.instances.size} instance(s)" do |i|
+          i.execute("cd /healing && bin/heal-local")
+        end
+      end
+
+
+      def diagnose_remote
+        App::Provisioner.new(self).diagnose
+        install
+        map.instances.each_in_thread "Diagnosing #{map.instances.size} instance(s)" do |i|
+          i.execute("cd /healing && bin/heal-diagnose-local")
+        end
+      end
+
       
     end
   end

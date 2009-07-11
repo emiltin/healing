@@ -1,7 +1,14 @@
 #!/usr/bin/env ruby
 
-require 'lib/healing'
-require 'lib/app/admin'
+require 'rubygems'
+require 'trollop'
+
+parser = nil
+opts = Trollop::options do
+  opt :ideal, "ideal file", :type => :string, :default => 'ideal.rb'
+  parser = self
+end
 
 h = Healing::App::Admin.new
+h.load_ideal opts[:ideal]
 h.upload

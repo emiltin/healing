@@ -218,3 +218,69 @@ ssh						now we're at the instance
 bash					$_ = ]     $_ = hBc
 ruby
 backticks				here both $_ and $_ are empty, and PATH is wrong
+
+
+gems often install other gems they depend on. if we skip a gem because it's already installed, we might inadvertedly prevent other needed gems from being installed......
+
+
+ideas:
+split log files into raw command line text, and an tree-overview status overview.
+have each heal() method return a status, so we can collect all failed elements, and display them to the user, organized by instances
+after a healing, report number of healed, skipped, failed elements
+diagnose command, run healed? on all elements, and present a summary, or perhaps full trees
+
+
+
+
+we heal a cloud. we send the ideal to the bunch of instances, and start the healing process on each. the worker on an instance runs, and output is produced:
+
+- commands and their command line output
+- healing status lines
+
+all this stuff is going back to the admin app and saved in separate log files.
+however, it would be nice to be able to output a summary to the user. how would this be done? certainly it involves gathering info from all the instances.
+
+idea for showing a summary of a healing:
+
++----+----+------------+---------------------------------------+
+| Ok | Er | Cloud      | Element                               |
++----+----+------------+---------------------------------------+ 
+| 2  | 2  | dev        | Dir: /shared                          |
+| 1  |    | dev/db     | File: /db                             |
+|    | 1  | dev/slave  | File: /slave                          |
+| 2  |    | dev/app    | Dir: /xx                              |
+| 1  | 1  | dev/app    |  File: /xx/cool.txt                   |
++----+----+------------+---------------------------------------+
+
+only elements are shown, not the clouds themselves. cloud paths are shown in a separate column, and elements are only indented relative to their cloud.
+each row shows the number of instances that the element was healed on successfully and with error.
+
+if i can print a similarly formatted extract when healing on each instance, i should be able to collect them into a single summary.
+
+dev/db:
++----+----+------------+---------------------------------------+
+| Ok | Er | Cloud      | Element                               |
++----+----+------------+---------------------------------------+ 
+| 1  |    | dev        | Dir: /shared                          |
+| 1  |    | dev/db     | File: /db                             |
++----+----+------------+---------------------------------------+
+
+dev/slave:
++----+----+------------+---------------------------------------+
+| Ok | Er | Cloud      | Element                               |
++----+----+------------+---------------------------------------+ 
+| 1  |    | dev        | Dir: /shared                          |
+|    | 1  | dev/slave  | File: /slave                          |
++----+----+------------+---------------------------------------+
+
+dev/app:
++----+----+------------+---------------------------------------+
+| Ok | Er | Cloud      | Element                               |
++----+----+------------+---------------------------------------+ 
+|    | 2  | dev        | Dir: /shared                          |
+| 2  |    | dev/app    | Dir: /xx                              |
+| 1  | 1  | dev/app    |  File: /xx/cool.txt                   |
++----+----+------------+---------------------------------------+
+
+subclouds inhering parent cloud elements, so the instance healing summary includes these elements, but never elements from sibling clouds.
+

@@ -11,9 +11,13 @@ module Healing
         run options.command
   #      self.instance_eval &@block if @block
       end
-    
+      
+      def format_title
+        "#{options.name}: #{options.command}"
+      end
+      
       def describe_name
-        puts_title :execute, "#{options.name}"
+        puts_title :execute, format_title
       end
       
       def describe_settings

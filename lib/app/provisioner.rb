@@ -5,7 +5,10 @@ module Healing
       def initialize root
         @root = root
       end
-
+      
+      def diagnose
+      end
+      
       def heal
         if arm
           launch
