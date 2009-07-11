@@ -21,10 +21,11 @@ module Healing
                                   Reporter::Column.new(:message),
                                   Reporter::Column.new(:fingerprint))
 
-        @remote_reporter = Reporter.new( Reporter::Column.new(:ok),
+        @remote_reporter = Reporter.new( Reporter::Column.new(:item),
+                                         Reporter::Column.new(:ok),
                                          Reporter::Column.new(:fail),
-                                         Reporter::Column.new(:item),
-                                         Reporter::Column.new(:message))
+                                         Reporter::Column.new(:message),
+                                         Reporter::Column.new(:fingerprint))
                                                                 
       end  
       
@@ -125,12 +126,18 @@ module Healing
 
       def prune
         pruning = super
+        
+        orphaned = root.map.instances
+        @clouds.each { |c| orphaned -= c.my_instances }
+        pruning += orphaned
+        pruning.uniq!
+        
         if pruning.any?
           puts "Pruning #{pruning.size} instance(s)."
           remoter.terminate pruning
           map.remove_instances pruning        
         else
-          #      puts "No pruning needed."
+          puts "No pruning needed."
         end
       end
       

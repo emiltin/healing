@@ -24,12 +24,6 @@ module Healing
       def heal
         FileUtils.makedirs options.path unless ::File.exists? options.path
         FileUtils.chmod options.mode, options.path if options.mode
-        
-        if rand(100)>50
-          rand(4).to_s*10
-        else
-          raise "BAD"
-        end
       end
       
       def format_title

@@ -26,7 +26,7 @@ module Healing
       
       def to_s columns
         (0..height-1).to_a.map do |n|
-          str = columns.map {|c|  line(c.sym,n)[0..c.size-1].ljust(c.size) }.join(" #{@table.look[:vertical]} ")
+          str = columns.map {|c| line(c.sym,n)[0..c.size-1].ljust(c.size) }.join(" #{@table.look[:vertical]} ")
           "#{@table.look[:vertical]} #{str} #{@table.look[:vertical]}"
         end.join("\n")
       end 

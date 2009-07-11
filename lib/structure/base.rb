@@ -152,7 +152,7 @@ module Healing
       end
       
       def ref
-        "#{format_name.to_s}: #{format_title.to_s}"
+        [format_name.to_s,format_title.to_s].join(': ')
       end
       
       def format_name
@@ -224,7 +224,11 @@ module Healing
         describe_settings
         describe_children options if options[:recurse]
       end
-
+      
+      def describe_name
+        format_name
+      end
+      
       def describe_settings
       end
 

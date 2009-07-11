@@ -284,3 +284,7 @@ dev/app:
 
 subclouds inhering parent cloud elements, so the instance healing summary includes these elements, but never elements from sibling clouds.
 
+
+
+if we modify the ideal, and remove a cloud, we might orphan running instances. if we now run heal wuthout pruning, what should happen to the orphaned isntances? since they're running, is is best to heal them, even though they're not part of our cloud ideal?
+
