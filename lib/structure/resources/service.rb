@@ -7,17 +7,26 @@ module Healing
         class Lingo < Structure::Resource::Lingo
         end
         
+        def type
+          "pause"
+        end
+        
+        def ref
+          "pause #{@parent.options.name}"
+        end
+        
         def describe_name
           puts_title :while_stopped, ''
         end
         
-        def heal_resources
+        def heal
           unless subs_healed?
             describe_name
             @parent.stop
+            heal_resources
             #the service will set it's state itself
           else
-            "Stop not needed."
+            "No configuration required pause."
           end
         end
         
@@ -51,7 +60,6 @@ module Healing
       
       def heal
         describe_name
-#        stop if options.stop_during_setup?
         heal_resources
         case options.state
           when :on
@@ -61,6 +69,7 @@ module Healing
           when :off
             stop
         end
+        true
       end
       
       def start
@@ -79,10 +88,15 @@ module Healing
         run "/etc/init.d/#{options.name} restart"
       end
       
+      def ref
+        "#{options.name} service #{options.state}"
+      end
+      
       def format_title
         "#{options.name}: #{options.state}"
       end
-            def describe_name
+      
+      def describe_name
         puts_title :service, format_title
       end
 

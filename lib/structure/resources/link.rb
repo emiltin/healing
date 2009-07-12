@@ -16,6 +16,10 @@ module Healing
 #        run "ln -s #{options.path} #{options.target}"
       end
       
+      def name
+        "#{options.path} --> #{options.target}"
+      end
+        
       def format_title
         "#{options.path} --> #{options.target}"
       end

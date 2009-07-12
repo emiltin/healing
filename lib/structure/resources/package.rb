@@ -13,6 +13,7 @@ module Healing
       def heal
         describe_name
         run "apt-get install -y #{options.name} "
+        true
       end
 
       def revert
@@ -20,6 +21,10 @@ module Healing
         run "apt-get remove -y #{options.name}"
       end
 
+      def ref
+        "#{options.name} package"
+      end
+      
       def format_title
         options.name
       end

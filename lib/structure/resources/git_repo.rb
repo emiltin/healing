@@ -12,12 +12,20 @@ module Healing
 
       def heal
         super
-        run "git clone --depth 1 #{options.url} #{options.path}"
+        run "git clone --depth 1 #{options.url} #{options.path}" unless ::File.exists? options.path
         if options.user && options.group
           run "chown #{options.user}:#{options.group} #{options.path} -R"
         elsif options.user
           run "chown #{options.user} #{options.path} -R"
         end
+      end
+      
+      def name
+        "#{options.path}.git"
+      end
+      
+      def type
+        "git repo"
       end
       
       def describe_name

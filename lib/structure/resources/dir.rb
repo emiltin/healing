@@ -26,6 +26,14 @@ module Healing
         FileUtils.chmod options.mode, options.path if options.mode
       end
       
+      def ref
+        "#{options.path} dir"
+      end
+      
+      def name
+        options.path
+      end
+
       def format_title
         options.path
       end

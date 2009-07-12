@@ -10,17 +10,19 @@ module Healing
           recipe 'passenger', :version => '2.2.4'
           git_repo path, :url => options.repo, :user => 'www-data', :group => 'www-data'
           
-          run 'choose db package', :description => "read rails config and install the right db package", :path => path, :environment => options.environment do
+          run 'choose DB', :description => "read rails config and install the right db package", :path => path, :environment => options.environment do
             config = YAML.load_file("#{options.path}/config/database.yml") 
             adapter = config[options.environment.to_s]['adapter']
             mappings = { 'mysql' => 'mysql', 'sqlite3' => 'sqlite3-ruby' }
             gem_name = mappings[ adapter ]
             print "Inspecting the rails config...  "
             if gem_name
-              puts "using db adapter '#{adapter}'"
+              puts "Using db adapter '#{adapter}'"
               run_recipe { rubygem gem_name }
             else
-              puts "unkown db adater!"
+              msg = "Unkown db adater!"
+              puts msg
+              msg
             end
           end
 
@@ -56,6 +58,15 @@ EOF
         super
       end
       
+      def type
+        "rails app"
+      end
+      
+
+      def ref
+        "#{options.name} rails app"
+      end
+
       def describe_name
         puts_title :rails_app, options.name
       end

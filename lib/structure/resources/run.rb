@@ -7,6 +7,10 @@ module Healing
         @block = block
       end
       
+      def ref
+        "#{options.name}"
+      end
+      
       def format_title
         options.name
       end

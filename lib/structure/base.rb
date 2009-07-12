@@ -94,22 +94,22 @@ module Healing
       end
       
 
-      def extract str, len=60
-        max = (len-7)*0.5
+      def extract str, len=100
+        max = (len-5)*0.5
         if str.size<=len
           s = str
         else
           s = str.strip
           first = s.split("\n").first.strip
           last = s.split("\n").last.strip
-          s = "#{first[0..max]} [...] #{last[-max..-1]}"
+          s = "#{first[0..max]} ... #{last[-max..-1]}"
         end
         s.strip.gsub(/\n/,';')
       end
       
       def heal_and_report
         row = root.reporter.add_row self, :fingerprint => "#{hexdigest}", 
-        :item=> "#{'. '*@depth}#{ref}"
+        :item=> "#{indent}#{ref}"
         begin
           result = heal
           case result
@@ -131,6 +131,7 @@ module Healing
 
       def heal
         heal_resources
+        true
       end
       
       def cloud_path_string
@@ -152,7 +153,7 @@ module Healing
       end
       
       def ref
-        [format_name.to_s,format_title.to_s].join(': ')
+        "#{name} #{type}"
       end
       
       def format_name
@@ -164,7 +165,7 @@ module Healing
       
       def diagnose_and_report
         row = root.reporter.add_row self, :fingerprint => "#{hexdigest}", 
-        :item=> "#{'. '*@depth}#{ref}"
+        :item=> "#{indent}#{name}", :type => type
         begin
           result = diagnose
           case result
@@ -217,6 +218,18 @@ module Healing
 
       def order
         puts "  #{self.class.name.gsub(/.*::/,'')}: #{name}"
+      end
+      
+      def indent
+        '. '*@depth
+      end
+      
+      def name
+        options.name
+      end
+      
+      def type
+        self.class.name.gsub(/.*::/,'').downcase
       end
       
       def describe options={}

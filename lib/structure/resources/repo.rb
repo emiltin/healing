@@ -11,6 +11,10 @@ module Healing
         describe_name
       end
       
+      def ref
+        "#{options.path} repo"
+      end
+
       def describe_name
         puts_title :repository, options.path
       end
@@ -18,7 +22,10 @@ module Healing
       def describe_settings
         puts_setting :url if options.url
       end
-
+      
+      def format_title
+        options.path
+      end
 
     end
   end

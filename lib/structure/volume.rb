@@ -15,19 +15,18 @@ module Healing
       end
       
       def heal
-        if healed?
-          "Already mounted."
-        else
+        unless healed?
           run "echo \"#{options.device} /vol xfs noatime 0 0\" >> /etc/fstab"
           run 'mkdir /vol && mount /vol'
-        end        
+        end
+        true  
       end
       
       def defaults
         { :device => '/dev/sdh' }
       end
       
-      def format_title
+      def name
         options.vol_id
       end
       

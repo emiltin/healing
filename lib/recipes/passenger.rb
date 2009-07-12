@@ -5,13 +5,14 @@ rubygem 'passenger', :version => @options.version
 
 base = "/var/lib/gems/1.8/gems/passenger-#{@options.version}"
 
-run 'build passenger apache module', :description => "run passenger install scripts unless already build" do
+run 'build passenger module', :description => "run passenger install scripts unless already build" do
   if ::File.exists? "#{base}/ext/apache2/mod_passenger.so"
     puts "Module already build."
   else
     run_recipe do
       execute 'passenger-install-apache2-module', 'echo -en "\n\n\n\n" | /var/lib/gems/1.8/bin/passenger-install-apache2-module'
     end
+    "Installed passenger apache2 module."
   end
 end
 

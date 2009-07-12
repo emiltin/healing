@@ -21,11 +21,10 @@ module Healing
                                   Reporter::Column.new(:message),
                                   Reporter::Column.new(:fingerprint))
 
-        @remote_reporter = Reporter.new( Reporter::Column.new(:item),
-                                         Reporter::Column.new(:ok),
+        @remote_reporter = Reporter.new( Reporter::Column.new(:ok),
                                          Reporter::Column.new(:fail),
-                                         Reporter::Column.new(:message),
-                                         Reporter::Column.new(:fingerprint))
+                                         Reporter::Column.new(:item),
+                                         Reporter::Column.new(:message))
                                                                 
       end  
       
@@ -89,8 +88,12 @@ module Healing
       def install
         map.instances.each_in_thread "Uploading" do |instance|
           #it seems ssh here doesn't work if we use ~ in the path?
-          Healing::App::Base.run_locally "rsync -e 'ssh -i #{options.key} -o StrictHostKeyChecking=no' -ar /Users/emiltin/Desktop/healing/ root@#{instance.address}:/healing", :quiet => true
-          #TODO how to handle ssh/rsync error messages?
+          begin
+            Healing::App::Base.run_locally "rsync -e 'ssh -i #{options.key} -o StrictHostKeyChecking=no' -ar /Users/emiltin/Desktop/healing/ root@#{instance.address}:/healing", :quiet => true
+          rescue Exception => e
+            puts "ERROR: "+ e.to_s
+          end
+            #TODO how to handle ssh/rsync error messages?
         end
       end
             

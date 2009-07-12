@@ -17,19 +17,6 @@ module Healing
         end
       end
       
-      def extract str, len=60
-        max = (len-4)*0.5
-        if str.size<=len
-          s = str
-        else
-          s = str.strip
-          first = s.split("\n").first
-          last = s.split("\n").last
-          s = "#{first[0..max]}....#{last[-max..-1]}"
-        end
-        s.gsub(/\n/,'\\')
-      end
-
       def add_report status, msg
         if msg && msg!=''
           @reports[msg] = @messages[msg] ? @messages[msg]+1 : 1 
@@ -60,32 +47,32 @@ module Healing
   
     
     def parse str
-      summary = str.match(/Healing result:.*?\n\n/m)
-      return unless summary
-      summary = summary.to_s.split("\n")[4..-2].join("\n")
-      summary.scan(/\|.*\|/).each do |line|
-        match = /\|(.*)\|(.*)\|(.*)\|(.*)\|/.match line
-        if match
-          status = match[1].strip.to_sym
-          item = match[2].strip
-          message = match[3].strip
-          fingerprint = match[4].strip
-          
-          existing = @rows.find { |r| r.columns[:fingerprint]==fingerprint && r.columns[:message]==message && r.columns[status] }
-          if existing
-            existing.bump status
-          else
-            master = @rows.find { |r| r.columns[:fingerprint]==fingerprint && r.master==nil }
-            
-            r = make_row nil, {status => 1, :fingerprint => fingerprint, :item => item, :message => message}
-            r.master = master
-            
-            @rows.insert find_insert_pos(fingerprint), r
-          end
-        end
+      table = str.match(/Healing result:.*?\n\n/m)
+      return unless table
+      lines = table.to_s.split("\n")
+      header = lines[2]
+      rows = lines[4..-2]
+      fields =  header.split('|').map {|f| f.strip }.reject { |f| f=='' }
+      offsets = {}
+      fields.each { |f| offsets[f.downcase.to_sym] = header.match(/\s#{f}\s*/).offset(0) }
+      rows.each do |row|
+        data = {}
+        offsets.each { |f,off| data[f] = row[ off[0]..off[1]-1 ].strip }
+        process_row data
       end
     end
   
+    def process_row data
+      existing = @rows.find { |r| r.columns[:fingerprint]==data[:fingerprint] && r.columns[:message]==data[:message] && r.columns[data[:status]] }
+      if existing
+        existing.bump data[:status]
+      else
+        master = @rows.find { |r| r.columns[:fingerprint]==data[:fingerprint] && r.master==nil }
+        r = make_row nil, data.merge(data[:status].to_sym => 1)
+        r.master = master
+        @rows.insert find_insert_pos(data[:fingerprint]), r
+      end
+    end
     
   end
 end

@@ -9,7 +9,7 @@ module Healing
       def heal
   #      if rand(100)>50
   #      else
-          raise rand(2).to_s*10
+          raise rand(5).to_s*10
   #      end
       end
 

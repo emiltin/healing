@@ -288,3 +288,12 @@ subclouds inhering parent cloud elements, so the instance healing summary includ
 
 if we modify the ideal, and remove a cloud, we might orphan running instances. if we now run heal wuthout pruning, what should happen to the orphaned isntances? since they're running, is is best to heal them, even though they're not part of our cloud ideal?
 
+
+
+if a system command returns anything in stderr, it's recorded as a fail, even though it might not be a critical error.
+this indicates that we should use the result code, not stderr, to determine failure or success
+
+
+when parsing text tables, things break if a field contains a pipe (|) character. better to parse the header, and use absolute char ranges. ex: [2..15] 
+
+cool, cool. back to a clean run of rails with mysql on ebs, but now with a cooler reporting system. only problem remaining is that any write to stderr will be reported as a fail, even though it might just have been a warning.. results codes might be more robust.

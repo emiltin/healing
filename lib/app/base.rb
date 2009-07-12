@@ -12,8 +12,9 @@ module Healing
           err = stderr.read
           unless options[:quiet]
             puts out unless out=='' 
+            puts err unless err==''
+            raise err unless err==''
           end
-          raise err unless err==''
           return out
         end
         #result  = `#{cmd}`

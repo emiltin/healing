@@ -69,8 +69,9 @@ module Healing
           describe_name
           heal_resources    #heal any dependecies first
           version = "-v #{options.version}" if options.version
-          run "gem install --no-rdoc --no-ri #{version} #{options.name}"
+          out = run "gem install --no-rdoc --no-ri #{version} #{options.name}"
           Rubygem.scan_gem options.name.to_s
+          true
         end
       end
 
@@ -79,6 +80,14 @@ module Healing
         run "gem uninstall #{options.name}"
       end
 
+      def type
+        "gem"
+      end
+      
+      def ref
+        "#{options.name} gem"
+      end
+      
       def format_title
         options.name
       end

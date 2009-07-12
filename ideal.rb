@@ -2,16 +2,9 @@
 cloud :dev do
   uuid 'hjujj3j'
   key '/Users/emiltin/.ec2/testpair'
-  
-  instances 1  
-  failer
-  
-  cloud :app do
-    instances 2
-    uuid '3jfjfkj3kr'
-    failer
-  end
-  
+  instances 1
+  mysql_ebs 'vol-4943a020'
+  rails_app 'poolparty_example', :repo => 'git://github.com/emiltin/poolparty_example.git', :environment => :production
 end
 
 

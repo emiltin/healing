@@ -12,6 +12,10 @@ module Healing
   #      self.instance_eval &@block if @block
       end
       
+      def ref
+        "#{options.name}"
+      end
+
       def format_title
         "#{options.name}: #{options.command}"
       end

@@ -14,7 +14,7 @@ module Healing
           
           service 'mysql' do
             while_stopped do
-              execute 'backup /etc/mysql', "mv /etc/mysql /etc/mysql_backup"
+              execute 'backup original folder', "mv /etc/mysql /etc/mysql_backup"
               link '/etc/mysql', '/vol/etc/mysql'
             end
           end
@@ -27,6 +27,18 @@ module Healing
         super
       end
       
+      def type
+        "plugin"
+      end
+      
+      def name
+        "mysql on ebs"
+      end
+      
+      def ref
+        "mysql+ebs plugin"
+      end
+
       def describe_name
         puts_title :mysql_ebs, ''
       end

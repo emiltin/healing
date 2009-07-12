@@ -27,6 +27,15 @@ module Healing
         end
       end
  
+      def name
+        #::File.basename options.path
+        options.path
+      end
+
+      def ref
+        "#{name} file"
+      end
+
       def format_title
         options.path
       end

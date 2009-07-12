@@ -203,7 +203,15 @@ module Healing
           end
         end
       end
-
+      
+      def type
+        "cloud"
+      end
+      
+      def ref
+        "#{options.name} cloud"
+      end
+      
       def format_name
         'Cloud'
       end
