@@ -7,17 +7,22 @@ module Healing
       end
   
       def self.run_locally cmd, options={}
-        Open3.popen3(cmd) do |stdin, stdout, stderr|
-          out = stdout.read
-          err = stderr.read
-          unless options[:quiet]
-            puts out unless out=='' 
-            puts err unless err==''
-            raise err unless err==''
-          end
-          return out
+        result = `#{cmd} 2>&1`     #2>&1 redirects stderr to stdout
+        puts result.strip unless options[:quiet]
+        if $? != 0   #check exit code
+          raise result 
         end
-        #result  = `#{cmd}`
+        result
+#        Open3.popen3(cmd) do |stdin, stdout, stderr|
+#          out = stdout.read
+#          err = stderr.read
+#          unless options[:quiet]
+#            puts out unless out=='' 
+#            puts err unless err==''
+#            raise err unless err==''
+#          end
+#          return out
+#        end
       end
   
       def load_ideal path

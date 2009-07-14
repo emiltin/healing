@@ -108,8 +108,7 @@ module Healing
       end
       
       def heal_and_report
-        row = root.reporter.add_row self, :fingerprint => "#{hexdigest}", 
-        :item=> "#{indent}#{ref}"
+        row = root.reporter.add_row self, :fingerprint => "#{hexdigest}", :item=> "#{indent}#{ref}"
         begin
           result = heal
           case result

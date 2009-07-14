@@ -8,7 +8,7 @@ module Healing
 
       def bootstrap
         #after launching an instance, ruby might not be installed, so we need to manually bootstrap a minimal environment
-        installer = "apt-get"   #should be determined from the os launched. how?
+        installer = "apt-get"   #FIXME should be determined from the os launched. how?
         @instances.each_in_thread "Bootstrapping" do |i|
           i.command "mkdir /healing"
           i.command "echo '#{i.cloud_uuid}' > #{CLOUD_UUID_PATH}"

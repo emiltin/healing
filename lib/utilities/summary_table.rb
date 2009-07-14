@@ -1,50 +1,32 @@
 module Healing
-  class Reporter < Table
+  class SummeryTable < ReportTable
       
-    class Report < Table::Row
-      attr_accessor :master
-      
-      def initialize table,item,columns={}
-        super table,item,columns
-      end
+    class SummaryRow < ReportRow
 
       def line column, line
-    #    return super(column, line)
-        if column == :item && @columns[:status]==nil
+        if column == :item
           @master ? '' : @columns[:item]
         else
           super
         end
       end
       
-      def add_report status, msg
-        if msg && msg!=''
-          @reports[msg] = @messages[msg] ? @messages[msg]+1 : 1 
-        end
+      def to_s columns
+        @columns[:status] = @columns[:fail] ? 'fail' : 'ok'
+        super columns
       end
-
-      def bump column
-        @columns[column.to_sym] ||= 0
-        @columns[column.to_sym] += 1
-      end
-
-    end
-    
-    
-    def to_s
-      "Healing result:\n" + super + "\n\n"
-    end
+      
+    end  
     
     def make_row item, columns
-      Report.new self,item,columns
+      SummaryRow.new self,item,columns
     end
-    
+
     def find_insert_pos fingerprint
       r = @rows.reverse.find {|r| r.columns[:fingerprint] == fingerprint }
       pos = @rows.index r
       pos ? pos+1 : -1
-    end
-  
+    end  
     
     def parse str
       table = str.match(/Healing result:.*?\n\n/m)
@@ -63,7 +45,7 @@ module Healing
     end
   
     def process_row data
-      existing = @rows.find { |r| r.columns[:fingerprint]==data[:fingerprint] && r.columns[:message]==data[:message] && r.columns[data[:status]] }
+      existing = @rows.find { |r| r.columns[:fingerprint]==data[:fingerprint] && r.columns[:message]==data[:message] }
       if existing
         existing.bump data[:status]
       else
@@ -72,6 +54,10 @@ module Healing
         r.master = master
         @rows.insert find_insert_pos(data[:fingerprint]), r
       end
+    end
+    
+    def failures?
+      @rows.any? { |r| r.columns[:fail] }
     end
     
   end

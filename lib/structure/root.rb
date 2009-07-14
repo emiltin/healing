@@ -16,15 +16,15 @@ module Healing
         @map = Remoter::Map.new self
         build_remoter
         
-        @reporter = Reporter.new( Reporter::Column.new(:status),
-                                  Reporter::Column.new(:item),
-                                  Reporter::Column.new(:message),
-                                  Reporter::Column.new(:fingerprint))
+        @reporter = ReportTable.new( Table::Column.new(:status),
+                                  Table::Column.new(:item),
+                                  Table::Column.new(:message),
+                                  Table::Column.new(:fingerprint))
 
-        @remote_reporter = Reporter.new( Reporter::Column.new(:ok),
-                                         Reporter::Column.new(:fail),
-                                         Reporter::Column.new(:item),
-                                         Reporter::Column.new(:message))
+        @remote_reporter = SummeryTable.new( Table::Column.new(:ok),
+                                         Table::Column.new(:fail),
+                                         Table::Column.new(:item),
+                                         Table::Column.new(:message))
                                                                 
       end  
       
@@ -89,7 +89,7 @@ module Healing
         map.instances.each_in_thread "Uploading" do |instance|
           #it seems ssh here doesn't work if we use ~ in the path?
           begin
-            Healing::App::Base.run_locally "rsync -e 'ssh -i #{options.key} -o StrictHostKeyChecking=no' -ar /Users/emiltin/Desktop/healing/ root@#{instance.address}:/healing", :quiet => true
+            Healing::App::Base.run_locally "rsync -e 'ssh -i #{options.key} -o StrictHostKeyChecking=no' -ar #{BASE} root@#{instance.address}:/healing", :quiet => true
           rescue Exception => e
             puts "ERROR: "+ e.to_s
           end

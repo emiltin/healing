@@ -14,6 +14,7 @@ module Healing
         describe_name
         FileUtils.ln_s options.target, options.path
 #        run "ln -s #{options.path} #{options.target}"
+        "Warning: link target #{options.target } doesn't exist!" unless ::File.exist? options.target
       end
       
       def name

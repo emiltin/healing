@@ -7,10 +7,12 @@ module Healing
       end
       
       def heal
-  #      if rand(100)>50
-  #      else
-          raise rand(5).to_s*10
-  #      end
+        r = rand(5).to_s*10
+        if rand(100)>50
+          r
+        else
+          raise "err: #{rand(5).to_s*10}"
+        end
       end
 
       def describe_name

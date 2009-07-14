@@ -7,7 +7,8 @@ module Healing
 
   require BASE+'/lib/utilities/options.rb'
   require BASE+'/lib/utilities/table.rb'
-  require BASE+'/lib/utilities/reporter.rb'
+  require BASE+'/lib/utilities/report_table.rb'
+  require BASE+'/lib/utilities/summary_table.rb'
   require BASE+'/lib/utilities/threading.rb'
 
   Dir.glob(BASE+'/lib/core/*.rb') { |file| require file }     

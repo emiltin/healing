@@ -9,7 +9,7 @@ module Healing
       def heal
         describe_name
         run options.command
-  #      self.instance_eval &@block if @block
+        true
       end
       
       def ref
@@ -26,7 +26,6 @@ module Healing
       
       def describe_settings
         puts_setting :command
-#        puts_setting :block if block.to_s
       end
 
 

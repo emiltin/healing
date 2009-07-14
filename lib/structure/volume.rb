@@ -5,25 +5,28 @@ module Healing
       def initialize parent, vol_id, o={}
         super parent, o.merge(:vol_id=>vol_id)
         nearest_cloud.volumes << self
+        the_dev = options.device
+        the_path = options.path
         lingo self do
           package 'xfsprogs'
+          line_in_file '/etc/fstab', :content => "#{the_dev} #{the_path} xfs noatime 0 0\n"
+          dir the_path
         end
       end
       
       def healed?
-        ::File.exists? '/vol'
+        #run df, to get some info we can parse to verify that the volume is mounted
+        df = run "df #{options.path}", :quiet => true
+        df =~ /^#{options.device}/ && df =~ /#{options.path}$/
       end
       
       def heal
-        unless healed?
-          run "echo \"#{options.device} /vol xfs noatime 0 0\" >> /etc/fstab"
-          run 'mkdir /vol && mount /vol'
-        end
-        true  
+        super
+        run "mount #{options.path}" unless healed?
       end
       
       def defaults
-        { :device => '/dev/sdh' }
+        { :device => '/dev/sdh', :path => '/vol' }
       end
       
       def name
