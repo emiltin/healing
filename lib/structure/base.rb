@@ -152,7 +152,7 @@ module Healing
       end
       
       def ref
-        "#{name} #{type}"
+        options.comment? ? "#{name} #{type} (#{options.comment})" : "#{name} #{type}"
       end
       
       def format_name
@@ -230,10 +230,12 @@ module Healing
       def type
         self.class.name.gsub(/.*::/,'').downcase
       end
-      
+ 
       def describe options={}
-        describe_name
-        describe_settings
+        root.describer.add_row self, :fingerprint => "#{hexdigest}", :item=> "#{indent}#{ref}"
+#        puts "#{indent}#{ref}"
+        #describe_name
+        #describe_settings
         describe_children options if options[:recurse]
       end
       

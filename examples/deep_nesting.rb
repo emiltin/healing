@@ -13,6 +13,11 @@ cloud :music do
       instance :bebop do
         uuid  '0vhjj348isjsj3fb'
         dir '/music/rhytmic/jazz/bebop'
+        cloud :boppers do
+          uuid 'b4u4x3tt5sddliu34'
+          instances 3
+          dir '/boppers'
+        end
       end
       instance :slow do
         uuid  '7877vjujxhhfd2h'

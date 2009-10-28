@@ -26,7 +26,15 @@ module Healing
           puts run(r)
         end
       end
-
+      
+      def name
+        options.task
+      end
+      
+      def type
+        "rake task"
+      end
+      
       def describe_name
         puts_title :rake, options.task
       end

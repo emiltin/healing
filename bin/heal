@@ -4,7 +4,7 @@ require 'rubygems'
 require 'trollop'
 require File.dirname(__FILE__)+'/../lib/healing'
 
-commands = 'ideal scan terminate heal volumes upload diagnose prune test'.split
+commands = 'ideal scan terminate heal volumes upload diagnose prune'.split
 
 matches = commands.select { |c| c.match /^#{ARGV[0]}/ }
 if matches.size==1

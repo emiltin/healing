@@ -9,7 +9,7 @@ cloud :master_slave do
     uuid  'vmcfncnagagnc344'
     instances 3 
     dir '/xx/yy'
-    rails_app 'poolparty_example', :repo => 'git://github.com/emiltin/poolparty_example.git', :environment => :production
+    rails_app '/poolparty_example', :repo => 'git://github.com/emiltin/poolparty_example.git'
   end
 
   cloud :db do

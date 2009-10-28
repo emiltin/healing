@@ -36,10 +36,12 @@ module Healing
       end
 
       def instances options={}
-        instance_list = []
         h = {}
         h[:instance_id] = options[:instance_id] if options[:instance_id]
-        ec2.describe_instances(h).reservationSet.item.each do |reservationSet|
+        info = ec2.describe_instances(h)
+        return [] unless info.reservationSet
+        instance_list = []
+        instances.reservationSet.item.each do |reservationSet|
           reservationSet.instancesSet.item.each do |i|
             next if options[:key] && (i.keyName != options[:key].to_s)
             next if options[:state] && (i.instanceState.name != options[:state].to_s)
@@ -71,10 +73,12 @@ module Healing
       end
 
       def volumes options={}
-        volume_list = []
         h = {}
         h[:volume_id] = options[:volume_id] if options[:volume_id]
-        ec2.describe_volumes(h).volumeSet.item.each do |i|
+        info = ec2.describe_volumes(h)
+        return [] unless info.volumeSet
+        volume_list = []
+        info.volumeSet.item.each do |i|
           next if options[:status] && (i.status != options[:status].to_s)
           h = { :id => i.volumeId, :status => i.status }
           if i.attachmentSet

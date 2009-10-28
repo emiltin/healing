@@ -5,9 +5,8 @@ cloud :raking do
   instances 1
   
   mysql_ebs 'vol-4943a020'
-  rails_app '/poolparty_example', :repo => 'git://github.com/emiltin/poolparty_example.git', :environment => :production
-#  rubygem 'rake'
-  rake "stats", :base => '/poolparty_example'#, :flags => "RAILS_ENV=production"
-  rake "log:clear", :base => '/poolparty_example'
+  rails_app '/rails_app', :repo => 'git://github.com/emiltin/poolparty_example.git'
+  rake "stats", :base => '/rails_app'#, :flags => "RAILS_ENV=production"
+  rake "log:clear", :base => '/rails_app'
 end
 

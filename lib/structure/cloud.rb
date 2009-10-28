@@ -117,7 +117,7 @@ module Healing
       end
 
       def validate
-        raise "Cloud uuid not set in '#{options.name}'" unless options.uuid || !options.num_instances
+        raise "Cloud uuid not set in '#{options.name}'" unless options.uuid || options.num_instances==0
       end
 
       def root?

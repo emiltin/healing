@@ -25,7 +25,7 @@ cloud :drill do
   end
 
   #volume
-  volume 'vol-342423'
+  #volume 'vol-342423'
 
   #recipes
   recipe 'motd', :message => 'Welcome'
@@ -35,8 +35,8 @@ cloud :drill do
   end
   
   #plugins
-  rails_app 'myapp', :repo => '/my/app'
-  mysql_ebs 'vol-234234'
+#  mysql_ebs 'vol-4943a020'
+#  rails_app '/myapp', :repo => '/my/app'
   
 end
 

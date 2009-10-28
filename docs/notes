@@ -298,8 +298,12 @@ when parsing text tables, things break if a field contains a pipe (|) character.
 
 cool, cool. back to a clean run of rails with mysql on ebs, but now with a cooler reporting system. only problem remaining is that any write to stderr will be reported as a fail, even though it might just have been a warning.. results codes might be more robust.
 
-
 idea: output xml instead of text tables on the remote instances. it would be easier to format and parse data that way.
 
+when attaching volumes, i should wait until they're ready before proceeding
 
-when attaching volumes, should wait until they're ready
+it seems it's time to look at the uploading of user files, and separating that from uploading the healing code. should also look at how  keyfiles are handled. i already packaged healing as a gem, but it might be nice with the option to install healing via rsync from the local machine, for development. for users, it should probably be installed as a gem via github.
+
+perhaps the users files is simply a folder, installed either via rsync or git, where all the ideal.rb files, templates, etc are stored. this would have to be installed by the bootstrapper, NOT the normal healing process, since anything coming from the admin machine can't be done by the worker on the instance. in cas it came from git repo, i guess it should be possible to use a resource to install it.
+
+using backticks for running local commands has the benefit that we can get the result code of the command just run. but it has the drawback that if we run it over ssh, output is received in big buffered chunks, isntead of contiously.

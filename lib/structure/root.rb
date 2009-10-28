@@ -4,7 +4,7 @@ module Healing
 
       include Healing::Threading
 
-      attr_accessor :remoter, :map, :armed, :clouds, :reporter, :remote_reporter
+      attr_accessor :remoter, :map, :armed, :clouds, :reporter, :remote_reporter, :describer
       
       def initialize o, &block
         raise "You can only define one root cloud!" if Cloud.root
@@ -25,6 +25,8 @@ module Healing
                                          Table::Column.new(:fail),
                                          Table::Column.new(:item),
                                          Table::Column.new(:message))
+
+        @describer = ReportTable.new( Table::Column.new(:item))
                                                                 
       end  
       
@@ -42,6 +44,11 @@ module Healing
         @map.instances.each { |i| @remote_reporter.parse i.output }
         puts @remote_reporter.to_s
       end
+
+      def describe options={}
+        super options
+        puts @describer.to_s
+      end
       
       def build_remoter
         @remoter = Healing::Remoter::Base.build options.remoter
@@ -56,7 +63,7 @@ module Healing
       def remoter
         @remoter
       end
-
+      
       def describe_settings
         super
         puts_setting :key, options.key
