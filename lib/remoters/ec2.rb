@@ -52,7 +52,7 @@ module Healing
       end
 
       def launch options
-        response = ec2.run_instances :min_count => options[:num], :max_count => options[:num], :image_id => options[:image], :key_name => options[:key]
+        response = ec2.run_instances :min_count => options[:num], :max_count => options[:num], :image_id => options[:image], :key_name => options[:key], :availability_zone => options[:availability_zone]
         num = response.instancesSet.item.size
         instances = []
         response.instancesSet.item.each do |item|
@@ -63,10 +63,8 @@ module Healing
 
       def terminate instances
         return unless instances && instances.any?
-        production = ['i-7287241b','i-54b51a3d','i-8cc04be5','i-b21181db','i-3f138356']   #safety
         instances.reject! { |i| i.state=='terminated' }
         instances.each do |i|
-          raise "Ups! trying to terminate production instances!" if production.include? i.id.to_s
           puts "terminating instance #{i.id}."
         end
         ec2.terminate_instances( :instance_id => instances.map { |i| i.id } ) if instances.any?

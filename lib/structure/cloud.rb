@@ -20,6 +20,10 @@ module Healing
           @target.options.image = i
         end
 
+        def availability_zone z
+          @target.options.availability_zone = z
+        end
+
         def key path
           @target.options.key = path
         end

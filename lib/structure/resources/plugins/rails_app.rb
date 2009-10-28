@@ -7,7 +7,7 @@ module Healing
         
         lingo self, options.to_hash do        #pass on options to the lingo block
           path = options.name
-          recipe 'passenger', :version => '2.2.4'
+          recipe 'passenger', :version => '2.2.4' #TODO would be nicer to read the rails env file and use that to determine which rails version to install, or if it's vendored
           git_repo path, :url => options.repo, :user => 'www-data', :group => 'www-data'
           
           run 'choose DB', :description => "read rails config and install the right db package", :path => path, :environment => options.environment do
