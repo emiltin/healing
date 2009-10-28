@@ -32,7 +32,7 @@ module Healing
         total = @armed.values.inject { |v,m| v+m }
         puts "Launching #{total} instance(s)."
         @armed.each_pair do |cloud,num|
-          @launched.concat @root.remoter.launch(:num => num, :key => @root.key_name, :image => cloud.options.image, :cloud => cloud, :cloud_uuid => cloud.options.uuid)
+          @launched.concat @root.remoter.launch(:num => num, :key => @root.key_name, :image => cloud.options.image, :availability_zone => cloud.options.availability_zone, :cloud => cloud, :cloud_uuid => cloud.options.uuid)
         end
         @root.map.add_instances @launched
         wait_for_instances
