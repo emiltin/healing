@@ -1,0 +1,7 @@
+
+
+
+required gems:
+
+trollop
+amazon-ec2

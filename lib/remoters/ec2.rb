@@ -41,7 +41,7 @@ module Healing
         info = ec2.describe_instances(h)
         return [] unless info.reservationSet
         instance_list = []
-        instances.reservationSet.item.each do |reservationSet|
+        info.reservationSet.item.each do |reservationSet|
           reservationSet.instancesSet.item.each do |i|
             next if options[:key] && (i.keyName != options[:key].to_s)
             next if options[:state] && (i.instanceState.name != options[:state].to_s)
